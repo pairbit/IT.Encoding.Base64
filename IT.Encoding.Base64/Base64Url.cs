@@ -307,7 +307,7 @@ public static class Base64Url
     {
         if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -316,7 +316,7 @@ public static class Base64Url
     {
         if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -326,7 +326,7 @@ public static class Base64Url
     {
         if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -334,14 +334,14 @@ public static class Base64Url
     {
         if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     public static byte[] Encode128ToBytes(UInt128 value)
     {
         var encoded = new byte[22];
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0], _encodingBytes);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0], _bytes);
 
         return encoded;
     }
@@ -350,14 +350,14 @@ public static class Base64Url
     {
         var encoded = new char[22];
 
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0], _encodingChars);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0], _chars);
 
         return encoded;
     }
 
     public static string Encode128ToString(UInt128 value) => string.Create(22, value, static (chars, value) =>
     {
-        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(chars), _encodingChars);
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(chars), _chars);
     });
 
     #endregion Encode128
@@ -369,7 +369,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
 
-        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap))
+        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -382,7 +382,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
 
-        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap))
+        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -398,7 +398,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -414,7 +414,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -429,7 +429,7 @@ public static class Base64Url
 
         UInt128 value = 0;
 
-        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
 
         return value;
@@ -442,7 +442,7 @@ public static class Base64Url
 
         UInt128 value = 0;
 
-        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
 
         return value;
@@ -457,7 +457,7 @@ public static class Base64Url
         if (bytes.Length != 9) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 12) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -467,7 +467,7 @@ public static class Base64Url
         if (bytes.Length != 9) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 12) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -477,7 +477,7 @@ public static class Base64Url
         if (Unsafe.SizeOf<T>() != 9) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 12) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -487,7 +487,7 @@ public static class Base64Url
         if (Unsafe.SizeOf<T>() != 9) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 12) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -498,7 +498,7 @@ public static class Base64Url
         if (bytes.Length != 9) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 9");
         if (encoded.Length < 12) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 12");
 
-        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -507,7 +507,7 @@ public static class Base64Url
         if (bytes.Length != 9) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 9");
         if (encoded.Length < 12) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 12");
 
-        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode72(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -516,7 +516,7 @@ public static class Base64Url
         if (Unsafe.SizeOf<T>() != 9) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 9");
         if (encoded.Length < 12) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 12");
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -525,7 +525,7 @@ public static class Base64Url
         if (Unsafe.SizeOf<T>() != 9) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 9");
         if (encoded.Length < 12) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 12");
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -535,7 +535,7 @@ public static class Base64Url
 
         var encoded = new byte[12];
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref encoded[0], _encodingBytes);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref encoded[0], _bytes);
 
         return encoded;
     }
@@ -547,7 +547,7 @@ public static class Base64Url
 
         var encoded = new char[12];
 
-        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref encoded[0], _encodingChars);
+        UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref encoded[0], _chars);
 
         return encoded;
     }
@@ -559,7 +559,7 @@ public static class Base64Url
 
         return string.Create(12, value, static (chars, value) =>
         {
-            UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(chars), _encodingChars);
+            UnsafeBase64.Encode72(ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(chars), _chars);
         });
     }
 
@@ -573,7 +573,7 @@ public static class Base64Url
         if (encoded.Length != 12) return EncodingStatus.InvalidDataLength;
         if (Unsafe.SizeOf<T>() != 9) return EncodingStatus.InvalidDestinationLength;
 
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -587,7 +587,7 @@ public static class Base64Url
         if (encoded.Length != 12) return EncodingStatus.InvalidDataLength;
         if (Unsafe.SizeOf<T>() != 9) return EncodingStatus.InvalidDestinationLength;
 
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -608,7 +608,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDestinationLength;
         }
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -629,7 +629,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDestinationLength;
         }
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -645,7 +645,7 @@ public static class Base64Url
 
         T value = default;
 
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid byte");
 
         return value;
@@ -659,7 +659,7 @@ public static class Base64Url
 
         T value = default;
 
-        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode72(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid char");
 
         return value;
@@ -674,7 +674,7 @@ public static class Base64Url
         if (bytes.Length != 8) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 11) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -684,7 +684,7 @@ public static class Base64Url
         if (bytes.Length != 8) return EncodingStatus.InvalidDataLength;
         if (encoded.Length < 11) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -693,7 +693,7 @@ public static class Base64Url
     {
         if (encoded.Length < 11) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -702,7 +702,7 @@ public static class Base64Url
     {
         if (encoded.Length < 11) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -713,7 +713,7 @@ public static class Base64Url
         if (bytes.Length != 8) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 8");
         if (encoded.Length < 11) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 11");
 
-        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -722,7 +722,7 @@ public static class Base64Url
         if (bytes.Length != 8) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 8");
         if (encoded.Length < 11) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 11");
 
-        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode64(ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -730,7 +730,7 @@ public static class Base64Url
     {
         if (encoded.Length < 11) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 11");
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -738,14 +738,14 @@ public static class Base64Url
     {
         if (encoded.Length < 11) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 11");
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     public static byte[] Encode64ToBytes(ulong value)
     {
         var encoded = new byte[11];
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref encoded[0], _encodingBytes);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref encoded[0], _bytes);
 
         return encoded;
     }
@@ -754,14 +754,14 @@ public static class Base64Url
     {
         var encoded = new char[11];
 
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref encoded[0], _encodingChars);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref encoded[0], _chars);
 
         return encoded;
     }
 
     public static string Encode64ToString(ulong value) => string.Create(11, value, static (chars, value) =>
     {
-        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(chars), _encodingChars);
+        UnsafeBase64.Encode64(ref Unsafe.As<ulong, byte>(ref value), ref MemoryMarshal.GetReference(chars), _chars);
     });
 
     #endregion Encode64
@@ -773,7 +773,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 11) return EncodingStatus.InvalidDataLength;
 
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -786,7 +786,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 11) return EncodingStatus.InvalidDataLength;
 
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -802,7 +802,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -818,7 +818,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -833,7 +833,7 @@ public static class Base64Url
 
         ulong value = 0;
 
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
 
         return value;
@@ -846,7 +846,7 @@ public static class Base64Url
 
         ulong value = 0;
 
-        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode64(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ulong, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
 
         return value;
@@ -860,7 +860,7 @@ public static class Base64Url
     {
         if (encoded.Length < 6) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
 
         return EncodingStatus.Done;
     }
@@ -869,7 +869,7 @@ public static class Base64Url
     {
         if (encoded.Length < 6) return EncodingStatus.InvalidDestinationLength;
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
 
         return EncodingStatus.Done;
     }
@@ -879,7 +879,7 @@ public static class Base64Url
     {
         if (encoded.Length < 6) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 6");
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingBytes);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _bytes);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
@@ -887,14 +887,14 @@ public static class Base64Url
     {
         if (encoded.Length < 6) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 6");
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _encodingChars);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(encoded), _chars);
     }
 
     public static byte[] Encode32ToBytes(uint value)
     {
         var encoded = new byte[6];
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref encoded[0], _encodingBytes);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref encoded[0], _bytes);
 
         return encoded;
     }
@@ -903,14 +903,14 @@ public static class Base64Url
     {
         var encoded = new char[6];
 
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref encoded[0], _encodingChars);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref encoded[0], _chars);
 
         return encoded;
     }
 
     public static string Encode32ToString(uint value) => string.Create(6, value, static (chars, value) =>
     {
-        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(chars), _encodingChars);
+        UnsafeBase64.Encode32(ref Unsafe.As<uint, byte>(ref value), ref MemoryMarshal.GetReference(chars), _chars);
     });
 
     #endregion Encode32
@@ -922,7 +922,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 6) return EncodingStatus.InvalidDataLength;
 
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -935,7 +935,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 6) return EncodingStatus.InvalidDataLength;
 
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -951,7 +951,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -967,7 +967,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap, out invalid))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map, out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -982,7 +982,7 @@ public static class Base64Url
 
         uint value = 0;
 
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
 
         return value;
@@ -995,7 +995,7 @@ public static class Base64Url
 
         uint value = 0;
 
-        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _decodingMap, out var invalid))
+        if (!UnsafeBase64.TryDecode32(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<uint, byte>(ref value), _map, out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
 
         return value;
@@ -1003,17 +1003,21 @@ public static class Base64Url
 
     #endregion Decode32
 
+    public const string Encoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+    public static char[] Chars => _chars;
+
+    public static byte[] Bytes => _bytes;
+
+    public static sbyte[] Map => _map;
+
     #region Private
 
-    public static readonly char[] _encodingChars = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                                                 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
-                                                 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-                                                 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
-                                                 '8', '9', '-', '_', '=' ];
+    private static readonly char[] _chars = Encoding.ToCharArray();
 
-    public static readonly byte[] _encodingBytes = System.Text.Encoding.UTF8.GetBytes(_encodingChars);
+    private static readonly byte[] _bytes = System.Text.Encoding.UTF8.GetBytes(Encoding);
 
-    public static readonly sbyte[] _decodingMap = [
+    private static readonly sbyte[] _map = [
     -1, //0
     -1, //1
     -1, //2

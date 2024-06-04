@@ -205,53 +205,53 @@ public class Base64UrlBenchmark
 
     private static string VectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url._encodingChars);
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
     });
 
     private static byte[] VectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url._encodingBytes);
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
         return encodedBytes;
     }
 
     private static Guid VectorDecodeFromString(string encoded)
     {
         Guid guid = default;
-        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url._decodingMap);
+        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
         return guid;
     }
 
     private static Guid VectorDecodeFromBytes(byte[] encoded)
     {
         Guid guid = default;
-        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url._decodingMap);
+        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
         return guid;
     }
 
     private static string NoVectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url._encodingChars);
+        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
     });
 
     private static byte[] NoVectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url._encodingBytes);
+        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
         return encodedBytes;
     }
 
     private static Guid NoVectorDecodeFromString(string encoded)
     {
         Guid guid = default;
-        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url._decodingMap);
+        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
         return guid;
     }
 
     private static Guid NoVectorDecodeFromBytes(byte[] encoded)
     {
         Guid guid = default;
-        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url._decodingMap);
+        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
         return guid;
     }
 }
