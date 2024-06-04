@@ -7,12 +7,12 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company />
-    <Description></Description>
+    <Description>Data encoding in base64 up to 128 bits</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/pairbit/IT.Encoding.Base64</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>Ivan Tikhonov</Authors>
-    <Copyright>Ivan Tikhonov © 2023</Copyright>
+    <Copyright>Ivan Tikhonov © 2024</Copyright>
     <Version>2.0.0</Version>
     <PackageTags>Encoding Base64 Base64Url</PackageTags>
 	<PackageReadmeFile>Readme.md</PackageReadmeFile>

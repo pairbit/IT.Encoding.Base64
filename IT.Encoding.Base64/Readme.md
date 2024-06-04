@@ -4,3 +4,4 @@
 [![GitHub Actions](https://github.com/pairbit/IT.Encoding.Base64/workflows/Build/badge.svg)](https://github.com/pairbit/IT.Encoding.Base64/actions)
 [![Releases](https://img.shields.io/github/release/pairbit/IT.Encoding.Base64.svg)](https://github.com/pairbit/IT.Encoding.Base64/releases)
 
+Data encoding in base64 up to 128 bits
