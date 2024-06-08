@@ -449,19 +449,19 @@ public static class Base64Url
 
     #region Valid128
 
-    public static EncodingStatus IsValid128(ReadOnlySpan<byte> encoded)
+    public static EncodingStatus TryValid128(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid128(ReadOnlySpan<char> encoded)
+    public static EncodingStatus TryValid128(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid128(ReadOnlySpan<byte> encoded, out byte invalid)
+    public static EncodingStatus TryValid128(ReadOnlySpan<byte> encoded, out byte invalid)
     {
         if (encoded.Length != 22)
         {
@@ -471,7 +471,7 @@ public static class Base64Url
         return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid128(ReadOnlySpan<char> encoded, out char invalid)
+    public static EncodingStatus TryValid128(ReadOnlySpan<char> encoded, out char invalid)
     {
         if (encoded.Length != 22)
         {
@@ -718,19 +718,19 @@ public static class Base64Url
 
     #region Valid72
 
-    public static EncodingStatus IsValid72(ReadOnlySpan<byte> encoded)
+    public static EncodingStatus TryValid72(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 12) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid72(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid72(ReadOnlySpan<char> encoded)
+    public static EncodingStatus TryValid72(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 12) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid72(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid72(ReadOnlySpan<byte> encoded, out byte invalid)
+    public static EncodingStatus TryValid72(ReadOnlySpan<byte> encoded, out byte invalid)
     {
         if (encoded.Length != 12)
         {
@@ -740,7 +740,7 @@ public static class Base64Url
         return UnsafeBase64.IsValid72(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid72(ReadOnlySpan<char> encoded, out char invalid)
+    public static EncodingStatus TryValid72(ReadOnlySpan<char> encoded, out char invalid)
     {
         if (encoded.Length != 12)
         {
@@ -957,19 +957,19 @@ public static class Base64Url
 
     #region Valid64
 
-    public static EncodingStatus IsValid64(ReadOnlySpan<byte> encoded)
+    public static EncodingStatus TryValid64(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 11) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid64(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid64(ReadOnlySpan<char> encoded)
+    public static EncodingStatus TryValid64(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 11) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid64(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid64(ReadOnlySpan<byte> encoded, out byte invalid)
+    public static EncodingStatus TryValid64(ReadOnlySpan<byte> encoded, out byte invalid)
     {
         if (encoded.Length != 11)
         {
@@ -979,7 +979,7 @@ public static class Base64Url
         return UnsafeBase64.IsValid64(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid64(ReadOnlySpan<char> encoded, out char invalid)
+    public static EncodingStatus TryValid64(ReadOnlySpan<char> encoded, out char invalid)
     {
         if (encoded.Length != 11)
         {
@@ -1158,19 +1158,19 @@ public static class Base64Url
 
     #region Valid32
 
-    public static EncodingStatus IsValid32(ReadOnlySpan<byte> encoded)
+    public static EncodingStatus TryValid32(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 6) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid32(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid32(ReadOnlySpan<char> encoded)
+    public static EncodingStatus TryValid32(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 6) return EncodingStatus.InvalidDataLength;
         return UnsafeBase64.IsValid32(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid32(ReadOnlySpan<byte> encoded, out byte invalid)
+    public static EncodingStatus TryValid32(ReadOnlySpan<byte> encoded, out byte invalid)
     {
         if (encoded.Length != 6)
         {
@@ -1180,7 +1180,7 @@ public static class Base64Url
         return UnsafeBase64.IsValid32(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
-    public static EncodingStatus IsValid32(ReadOnlySpan<char> encoded, out char invalid)
+    public static EncodingStatus TryValid32(ReadOnlySpan<char> encoded, out char invalid)
     {
         if (encoded.Length != 6)
         {
