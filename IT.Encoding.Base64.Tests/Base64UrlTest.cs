@@ -186,19 +186,27 @@ public class Base64UrlTest
 
             bytes.CopyTo(invalidBytes);
             invalidBytes[offset] = b;
+            Assert.That(Base64Url.IsValid32(invalidBytes), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode32(invalidBytes, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
 
-            Assert.That(Base64Url.TryDecode32(invalidBytes, out value, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid32(invalidBytes, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidByte, Is.EqualTo(b));
+            invalidByte = default;
+            Assert.That(Base64Url.TryDecode32(invalidBytes, out value, out invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
             Assert.That(invalidByte, Is.EqualTo(b));
 
             chars.CopyTo(invalidChars);
             invalidChars[offset] = (char)b;
+            Assert.That(Base64Url.IsValid32(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode32(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
 
-            Assert.That(Base64Url.TryDecode32(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid32(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)b));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode32(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
             Assert.That(invalidChar, Is.EqualTo((char)b));
 
@@ -209,10 +217,14 @@ public class Base64UrlTest
         {
             chars.CopyTo(invalidChars);
             invalidChars[i] = (char)offset;
+            Assert.That(Base64Url.IsValid32(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode32(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
 
-            Assert.That(Base64Url.TryDecode32(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid32(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)offset));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode32(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(uint)));
             Assert.That(invalidChar, Is.EqualTo((char)offset));
             offset++;
@@ -327,19 +339,27 @@ public class Base64UrlTest
 
             bytes.CopyTo(invalidBytes);
             invalidBytes[offset] = b;
+            Assert.That(Base64Url.IsValid64(invalidBytes), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode64(invalidBytes, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
 
-            Assert.That(Base64Url.TryDecode64(invalidBytes, out value, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid64(invalidBytes, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidByte, Is.EqualTo(b));
+            invalidByte = default;
+            Assert.That(Base64Url.TryDecode64(invalidBytes, out value, out invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
             Assert.That(invalidByte, Is.EqualTo(b));
 
             chars.CopyTo(invalidChars);
             invalidChars[offset] = (char)b;
+            Assert.That(Base64Url.IsValid64(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode64(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
 
-            Assert.That(Base64Url.TryDecode64(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid64(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)b));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode64(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
             Assert.That(invalidChar, Is.EqualTo((char)b));
 
@@ -350,10 +370,14 @@ public class Base64UrlTest
         {
             chars.CopyTo(invalidChars);
             invalidChars[i] = (char)offset;
+            Assert.That(Base64Url.IsValid64(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode64(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
 
-            Assert.That(Base64Url.TryDecode64(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid64(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)offset));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode64(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(ulong)));
             Assert.That(invalidChar, Is.EqualTo((char)offset));
             offset++;
@@ -482,19 +506,27 @@ public class Base64UrlTest
 
             bytes.CopyTo(invalidBytes);
             invalidBytes[offset] = b;
+            Assert.That(Base64Url.IsValid72(invalidBytes), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode72(invalidBytes, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
 
-            Assert.That(Base64Url.TryDecode72(invalidBytes, out value, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid72(invalidBytes, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidByte, Is.EqualTo(b));
+            invalidByte = default;
+            Assert.That(Base64Url.TryDecode72(invalidBytes, out value, out invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
             Assert.That(invalidByte, Is.EqualTo(b));
 
             chars.CopyTo(invalidChars);
             invalidChars[offset] = (char)b;
+            Assert.That(Base64Url.IsValid72(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode72(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
 
-            Assert.That(Base64Url.TryDecode72(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid72(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)b));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode72(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
             Assert.That(invalidChar, Is.EqualTo((char)b));
 
@@ -505,10 +537,14 @@ public class Base64UrlTest
         {
             chars.CopyTo(invalidChars);
             invalidChars[i] = (char)offset;
+            Assert.That(Base64Url.IsValid72(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode72(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
 
-            Assert.That(Base64Url.TryDecode72(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid72(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)offset));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode72(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(FileId)));
             Assert.That(invalidChar, Is.EqualTo((char)offset));
             offset++;
@@ -614,19 +650,27 @@ public class Base64UrlTest
 
             bytes.CopyTo(invalidBytes);
             invalidBytes[offset] = b;
+            Assert.That(Base64Url.IsValid128(invalidBytes), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode128(invalidBytes, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
 
-            Assert.That(Base64Url.TryDecode128(invalidBytes, out value, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid128(invalidBytes, out var invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidByte, Is.EqualTo(b));
+            invalidByte = default;
+            Assert.That(Base64Url.TryDecode128(invalidBytes, out value, out invalidByte), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
             Assert.That(invalidByte, Is.EqualTo(b));
 
             chars.CopyTo(invalidChars);
             invalidChars[offset] = (char)b;
+            Assert.That(Base64Url.IsValid128(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode128(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
 
-            Assert.That(Base64Url.TryDecode128(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid128(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo(b));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode128(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
             Assert.That(invalidChar, Is.EqualTo((char)b));
 
@@ -637,10 +681,14 @@ public class Base64UrlTest
         {
             chars.CopyTo(invalidChars);
             invalidChars[i] = (char)offset;
+            Assert.That(Base64Url.IsValid128(invalidChars), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(Base64Url.TryDecode128(invalidChars, out value), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
 
-            Assert.That(Base64Url.TryDecode128(invalidChars, out value, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(Base64Url.IsValid128(invalidChars, out var invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
+            Assert.That(invalidChar, Is.EqualTo((char)offset));
+            invalidChar = default;
+            Assert.That(Base64Url.TryDecode128(invalidChars, out value, out invalidChar), Is.EqualTo(EncodingStatus.InvalidData));
             Assert.That(value, Is.EqualTo(default(UInt128)));
             Assert.That(invalidChar, Is.EqualTo((char)offset));
             offset++;
