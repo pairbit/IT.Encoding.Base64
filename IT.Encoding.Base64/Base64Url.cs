@@ -1244,6 +1244,24 @@ public static class Base64Url
         UnsafeBase64.Encode8(Chars, ref value, ref MemoryMarshal.GetReference(encoded));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Encode8(byte value, out byte encoded0, out byte encoded1)
+    {
+        var map = Bytes;
+        int i = value << 8;
+        encoded0 = map[i >> 10];
+        encoded1 = map[i >> 4 & 0x3F];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Encode8(byte value, out char encoded0, out char encoded1)
+    {
+        var map = Chars;
+        int i = value << 8;
+        encoded0 = map[i >> 10];
+        encoded1 = map[i >> 4 & 0x3F];
+    }
+
     public static byte[] Encode8ToBytes(byte value)
     {
         var encoded = new byte[2];
