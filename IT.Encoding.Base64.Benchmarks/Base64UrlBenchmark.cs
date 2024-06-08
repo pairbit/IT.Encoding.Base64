@@ -24,20 +24,20 @@ public class Base64UrlBenchmark
 
     #region EncodeToString
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_Convert()
         => Convert.ToBase64String(_guid.ToByteArray()).Replace("/", "_").Replace("+", "-").Replace("=", "");
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_Simple() => SimpleEncodeToString(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_gfoidl() => gfoidlEncodeToString(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_IT_Vector() => VectorEncodeToString(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_IT_NoVector() => NoVectorEncodeToString(_guid);
 
     #endregion EncodeToString
@@ -47,39 +47,43 @@ public class Base64UrlBenchmark
     [Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_gfoidl() => gfoidlEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT_Vector() => VectorEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT_NoVector() => NoVectorEncodeToBytes(_guid);
 
     #endregion EncodeToBytes
 
     #region DecodeFromString
 
-    //[Benchmark]
+    [Benchmark]
+    public Guid DecodeFromString_Convert()
+        => Unsafe.As<byte, Guid>(ref Convert.FromBase64String(_encodedString.Replace("_", "/").Replace("-", "+") + "==")[0]);
+
+    [Benchmark]
     public Guid DecodeFromString_gfoidl() => gfoidlDecodeFromString(_encodedString);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT_Vector() => VectorDecodeFromString(_encodedString);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT_NoVector() => NoVectorDecodeFromString(_encodedString);
 
     #endregion DecodeFromString
 
     #region DecodeFromBytes
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_gfoidl() => gfoidlDecodeFromBytes(_encodedBytes);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT_Vector() => VectorDecodeFromBytes(_encodedBytes);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT_NoVector() => NoVectorDecodeFromBytes(_encodedBytes);
 
     #endregion DecodeFromBytes
@@ -104,6 +108,7 @@ public class Base64UrlBenchmark
             if (!System.Text.Encoding.UTF8.GetString(bytes).Equals(str)) throw new InvalidOperationException();
 
             var guid = _guid;
+            if (!guid.Equals(DecodeFromString_Convert())) throw new InvalidOperationException(nameof(DecodeFromString_Convert));
             if (!guid.Equals(DecodeFromString_gfoidl())) throw new InvalidOperationException(nameof(DecodeFromString_gfoidl));
             if (!guid.Equals(DecodeFromString_IT_NoVector())) throw new InvalidOperationException(nameof(DecodeFromString_IT_NoVector));
             if (!guid.Equals(DecodeFromString_IT_Vector())) throw new InvalidOperationException(nameof(DecodeFromString_IT_Vector));
