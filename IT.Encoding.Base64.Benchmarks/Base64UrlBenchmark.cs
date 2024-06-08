@@ -31,13 +31,13 @@ public class Base64UrlBenchmark
     //[Benchmark]
     public string EncodeToString_Simple() => SimpleEncodeToString(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public string EncodeToString_gfoidl() => gfoidlEncodeToString(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public string EncodeToString_IT_Vector() => VectorEncodeToString(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public string EncodeToString_IT_NoVector() => NoVectorEncodeToString(_guid);
 
     #endregion EncodeToString
@@ -47,39 +47,39 @@ public class Base64UrlBenchmark
     //[Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public byte[] EncodeToBytes_gfoidl() => gfoidlEncodeToBytes(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public byte[] EncodeToBytes_IT_Vector() => VectorEncodeToBytes(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public byte[] EncodeToBytes_IT_NoVector() => NoVectorEncodeToBytes(_guid);
 
     #endregion EncodeToBytes
 
     #region DecodeFromString
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_gfoidl() => gfoidlDecodeFromString(_encodedString);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT_Vector() => VectorDecodeFromString(_encodedString);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT_NoVector() => NoVectorDecodeFromString(_encodedString);
 
     #endregion DecodeFromString
 
     #region DecodeFromBytes
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_gfoidl() => gfoidlDecodeFromBytes(_encodedBytes);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT_Vector() => VectorDecodeFromBytes(_encodedBytes);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT_NoVector() => NoVectorDecodeFromBytes(_encodedBytes);
 
     #endregion DecodeFromBytes
@@ -205,13 +205,13 @@ public class Base64UrlBenchmark
 
     private static string VectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), ref MemoryMarshal.GetReference(Base64Url.Chars));
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
     });
 
     private static byte[] VectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], ref MemoryMarshal.GetReference(Base64Url.Bytes));
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
         return encodedBytes;
     }
 
@@ -231,13 +231,13 @@ public class Base64UrlBenchmark
 
     private static string NoVectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), ref MemoryMarshal.GetReference(Base64Url.Chars));
+        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
     });
 
     private static byte[] NoVectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], ref MemoryMarshal.GetReference(Base64Url.Bytes));
+        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
         return encodedBytes;
     }
 

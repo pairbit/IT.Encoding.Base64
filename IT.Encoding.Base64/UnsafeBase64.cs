@@ -6,24 +6,24 @@ public static class UnsafeBase64
 {
     #region Encode128
 
-    public static void Encode128(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode128(ref byte src, ref byte encoded, byte[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 12), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16), ref map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 12), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16), map);
+        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20), map);
     }
 
-    public static void Encode128(ref byte src, ref char encoded, ref char map)
+    public static void Encode128(ref byte src, ref char encoded, char[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 24), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32), ref map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 40), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 24), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32), map);
+        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 40), map);
     }
 
     #endregion Encode128
@@ -66,18 +66,18 @@ public static class UnsafeBase64
 
     #region Encode72
 
-    public static void Encode72(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode72(ref byte src, ref byte encoded, byte[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
     }
 
-    public static void Encode72(ref byte src, ref char encoded, ref char map)
+    public static void Encode72(ref byte src, ref char encoded, char[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
     }
 
     #endregion Encode72
@@ -108,18 +108,18 @@ public static class UnsafeBase64
 
     #region Encode64
 
-    public static void Encode64(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode64(ref byte src, ref byte encoded, byte[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), ref map);
-        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
+        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
     }
 
-    public static void Encode64(ref byte src, ref char encoded, ref char map)
+    public static void Encode64(ref byte src, ref char encoded, char[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
-        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
     }
 
     #endregion Encode64
@@ -150,16 +150,16 @@ public static class UnsafeBase64
 
     #region Encode32
 
-    public static void Encode32(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode32(ref byte src, ref byte encoded, byte[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
     }
 
-    public static void Encode32(ref byte src, ref char encoded, ref char map)
+    public static void Encode32(ref byte src, ref char encoded, char[] map)
     {
-        Encode24(ref src, ref encoded, ref map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), ref map);
+        Encode24(ref src, ref encoded, map);
+        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
     }
 
     #endregion Encode32
@@ -187,26 +187,26 @@ public static class UnsafeBase64
     #region Encode24
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode24(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode24(ref byte src, ref byte encoded, byte[] map)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
-        encoded = Unsafe.AddByteOffset(ref map, i >> 18);
-        Unsafe.AddByteOffset(ref encoded, 1) = Unsafe.AddByteOffset(ref map, i >> 12 & 0x3F);
-        Unsafe.AddByteOffset(ref encoded, 2) = Unsafe.AddByteOffset(ref map, i >> 6 & 0x3F);
-        Unsafe.AddByteOffset(ref encoded, 3) = Unsafe.AddByteOffset(ref map, i & 0x3F);
+        encoded = map[i >> 18];
+        Unsafe.AddByteOffset(ref encoded, 1) = map[i >> 12 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 2) = map[i >> 6 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 3) = map[i & 0x3F];
 
         //slowly
         //Unsafe.As<byte, int>(ref encoded) = map[i >> 18] | map[i >> 12 & 0x3F] << 8 | map[i >> 6 & 0x3F] << 16 | map[i & 0x3F] << 24;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode24(ref byte src, ref char encoded, ref char map)
+    public static void Encode24(ref byte src, ref char encoded, char[] map)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
-        encoded = Unsafe.AddByteOffset(ref map, i >> 18 << 1);
-        Unsafe.AddByteOffset(ref encoded, 2) = Unsafe.AddByteOffset(ref map, (i >> 12 & 0x3F) << 1);
-        Unsafe.AddByteOffset(ref encoded, 4) = Unsafe.AddByteOffset(ref map, (i >> 6 & 0x3F) << 1);
-        Unsafe.AddByteOffset(ref encoded, 6) = Unsafe.AddByteOffset(ref map, (i & 0x3F) << 1);
+        encoded = map[i >> 18];
+        Unsafe.AddByteOffset(ref encoded, 2) = map[i >> 12 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 4) = map[i >> 6 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 6) = map[i & 0x3F];
     }
 
     #endregion Encode24
@@ -294,21 +294,21 @@ public static class UnsafeBase64
     #region Encode16
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode16(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode16(ref byte src, ref byte encoded, byte[] map)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
-        encoded = Unsafe.AddByteOffset(ref map, i >> 18);
-        Unsafe.AddByteOffset(ref encoded, 1) = Unsafe.AddByteOffset(ref map, i >> 12 & 0x3F);
-        Unsafe.AddByteOffset(ref encoded, 2) = Unsafe.AddByteOffset(ref map, i >> 6 & 0x3F);
+        encoded = map[i >> 18];
+        Unsafe.AddByteOffset(ref encoded, 1) = map[i >> 12 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 2) = map[i >> 6 & 0x3F];
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode16(ref byte src, ref char encoded, ref char map)
+    public static void Encode16(ref byte src, ref char encoded, char[] map)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
-        encoded = Unsafe.AddByteOffset(ref map, i >> 18 << 1);
-        Unsafe.AddByteOffset(ref encoded, 2) = Unsafe.AddByteOffset(ref map, (i >> 12 & 0x3F) << 1);
-        Unsafe.AddByteOffset(ref encoded, 4) = Unsafe.AddByteOffset(ref map, (i >> 6 & 0x3F) << 1);
+        encoded = map[i >> 18];
+        Unsafe.AddByteOffset(ref encoded, 2) = map[i >> 12 & 0x3F];
+        Unsafe.AddByteOffset(ref encoded, 4) = map[i >> 6 & 0x3F];
     }
 
     #endregion Encode16
@@ -389,11 +389,11 @@ public static class UnsafeBase64
     #region Encode8
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode8(ref byte src, ref byte encoded, ref byte map)
+    public static void Encode8(ref byte src, ref byte encoded, byte[] map)
     {
         int i = src << 8;
-        encoded = Unsafe.AddByteOffset(ref map, i >> 10);
-        Unsafe.AddByteOffset(ref encoded, 1) = Unsafe.AddByteOffset(ref map, i >> 4 & 0x3F);
+        encoded = map[i >> 10];
+        Unsafe.AddByteOffset(ref encoded, 1) = map[i >> 4 & 0x3F];
 
         //slowly
         //encoded = map[(src & 0xfc) >> 2];
@@ -401,11 +401,11 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode8(ref byte src, ref char encoded, ref char map)
+    public static void Encode8(ref byte src, ref char encoded, char[] map)
     {
         int i = src << 8;
-        encoded = Unsafe.AddByteOffset(ref map, i >> 10 << 1);
-        Unsafe.AddByteOffset(ref encoded, 2) = Unsafe.AddByteOffset(ref map, (i >> 4 & 0x3F) << 1);
+        encoded = map[i >> 10];
+        Unsafe.AddByteOffset(ref encoded, 2) = map[i >> 4 & 0x3F];
 
         //encoded = map[(src & 0xfc) >> 2];
         //Unsafe.AddByteOffset(ref encoded, 2) = map[(src & 0x03) << 4];
