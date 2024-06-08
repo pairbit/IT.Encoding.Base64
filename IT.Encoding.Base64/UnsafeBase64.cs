@@ -6,292 +6,292 @@ public static class UnsafeBase64
 {
     #region Encode128
 
-    public static void Encode128(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode128(byte[] map, ref byte src, ref byte encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 12), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16), map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 12));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16));
+        Encode8(map, ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20));
     }
 
-    public static void Encode128(ref byte src, ref char encoded, char[] map)
+    public static void Encode128(char[] map, ref byte src, ref char encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 24), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32), map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 40), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 9), ref Unsafe.AddByteOffset(ref encoded, 24));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32));
+        Encode8(map, ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 40));
     }
 
     #endregion Encode128
 
     #region Decode128
 
-    public static bool TryDecode128(ref byte encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 12), ref Unsafe.AddByteOffset(ref src, 9), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12), map) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 20), ref Unsafe.AddByteOffset(ref src, 15), map);
+    public static bool TryDecode128(sbyte[] map, ref byte encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 12), ref Unsafe.AddByteOffset(ref src, 9)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12)) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 20), ref Unsafe.AddByteOffset(ref src, 15));
 
-    public static bool TryDecode128(ref char encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 24), ref Unsafe.AddByteOffset(ref src, 9), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12), map) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 40), ref Unsafe.AddByteOffset(ref src, 15), map);
+    public static bool TryDecode128(sbyte[] map, ref char encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 24), ref Unsafe.AddByteOffset(ref src, 9)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12)) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 40), ref Unsafe.AddByteOffset(ref src, 15));
 
-    public static bool TryDecode128(ref byte encoded, ref byte src, sbyte[] map, out byte invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 12), ref Unsafe.AddByteOffset(ref src, 9), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12), map, out invalid) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 20), ref Unsafe.AddByteOffset(ref src, 15), map, out invalid);
+    public static bool TryDecode128(sbyte[] map, ref byte encoded, ref byte src, out byte invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 12), ref Unsafe.AddByteOffset(ref src, 9), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12), out invalid) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 20), ref Unsafe.AddByteOffset(ref src, 15), out invalid);
 
-    public static bool TryDecode128(ref char encoded, ref byte src, sbyte[] map, out char invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 24), ref Unsafe.AddByteOffset(ref src, 9), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12), map, out invalid) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 40), ref Unsafe.AddByteOffset(ref src, 15), map, out invalid);
+    public static bool TryDecode128(sbyte[] map, ref char encoded, ref byte src, out char invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 24), ref Unsafe.AddByteOffset(ref src, 9), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12), out invalid) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 40), ref Unsafe.AddByteOffset(ref src, 15), out invalid);
 
     #endregion Decode128
 
     #region IsValid128
 
-    public static bool IsValid128(ref byte encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 12), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 20), map);
+    public static bool IsValid128(sbyte[] map, ref byte encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 12)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16)) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 20));
 
-    public static bool IsValid128(ref char encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 24), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 32), map) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 40), map);
+    public static bool IsValid128(sbyte[] map, ref char encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 24)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 32)) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 40));
 
-    public static bool IsValid128(ref byte encoded, sbyte[] map, out byte invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 12), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map, out invalid) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 20), map, out invalid);
+    public static bool IsValid128(sbyte[] map, ref byte encoded, out byte invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 12), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16), out invalid) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 20), out invalid);
 
-    public static bool IsValid128(ref char encoded, sbyte[] map, out char invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 24), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 32), map, out invalid) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 40), map, out invalid);
+    public static bool IsValid128(sbyte[] map, ref char encoded, out char invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 24), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 32), out invalid) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 40), out invalid);
 
     #endregion IsValid128
 
     #region Encode72
 
-    public static void Encode72(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode72(byte[] map, ref byte src, ref byte encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8));
     }
 
-    public static void Encode72(ref byte src, ref char encoded, char[] map)
+    public static void Encode72(char[] map, ref byte src, ref char encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8));
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16));
     }
 
     #endregion Encode72
 
     #region Decode72
 
-    public static bool TryDecode72(ref byte encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map);
+    public static bool TryDecode72(sbyte[] map, ref byte encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6));
 
-    public static bool TryDecode72(ref char encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map);
+    public static bool TryDecode72(sbyte[] map, ref char encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6));
 
-    public static bool TryDecode72(ref byte encoded, ref byte src, sbyte[] map, out byte invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid);
+    public static bool TryDecode72(sbyte[] map, ref byte encoded, ref byte src, out byte invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), out invalid);
 
-    public static bool TryDecode72(ref char encoded, ref byte src, sbyte[] map, out char invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid);
+    public static bool TryDecode72(sbyte[] map, ref char encoded, ref byte src, out char invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), out invalid);
 
     #endregion Decode72
 
     #region IsValid72
 
-    public static bool IsValid72(ref byte encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map);
+    public static bool IsValid72(sbyte[] map, ref byte encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8));
 
-    public static bool IsValid72(ref char encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map);
+    public static bool IsValid72(sbyte[] map, ref char encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8)) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16));
 
-    public static bool IsValid72(ref byte encoded, sbyte[] map, out byte invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid);
+    public static bool IsValid72(sbyte[] map, ref byte encoded, out byte invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid);
 
-    public static bool IsValid72(ref char encoded, sbyte[] map, out char invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 16), map, out invalid);
+    public static bool IsValid72(sbyte[] map, ref char encoded, out char invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 16), out invalid);
 
     #endregion IsValid72
 
     #region Encode64
 
-    public static void Encode64(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode64(byte[] map, ref byte src, ref byte encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
-        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4));
+        Encode16(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 8));
     }
 
-    public static void Encode64(ref byte src, ref char encoded, char[] map)
+    public static void Encode64(char[] map, ref byte src, ref char encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode24(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
-        Encode16(ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16), map);
+        Encode24(map, ref src, ref encoded);
+        Encode24(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8));
+        Encode16(map, ref Unsafe.AddByteOffset(ref src, 6), ref Unsafe.AddByteOffset(ref encoded, 16));
     }
 
     #endregion Encode64
 
     #region Decode64
 
-    public static bool TryDecode64(ref byte encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode16(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map);
+    public static bool TryDecode64(sbyte[] map, ref byte encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode16(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6));
 
-    public static bool TryDecode64(ref char encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map) &&
-        TryDecode16(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map);
+    public static bool TryDecode64(sbyte[] map, ref char encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3)) &&
+        TryDecode16(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6));
 
-    public static bool TryDecode64(ref byte encoded, ref byte src, sbyte[] map, out byte invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode16(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid);
+    public static bool TryDecode64(sbyte[] map, ref byte encoded, ref byte src, out byte invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode16(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 6), out invalid);
 
-    public static bool TryDecode64(ref char encoded, ref byte src, sbyte[] map, out char invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode24(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid) &&
-        TryDecode16(ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), map, out invalid);
+    public static bool TryDecode64(sbyte[] map, ref char encoded, ref byte src, out char invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode24(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), out invalid) &&
+        TryDecode16(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 6), out invalid);
 
     #endregion Decode64
 
     #region IsValid64
 
-    public static bool IsValid64(ref byte encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map) &&
-        IsValid16(ref Unsafe.AddByteOffset(ref encoded, 8), map);
+    public static bool IsValid64(sbyte[] map, ref byte encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4)) &&
+        IsValid16(map, ref Unsafe.AddByteOffset(ref encoded, 8));
 
-    public static bool IsValid64(ref char encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map) &&
-        IsValid16(ref Unsafe.AddByteOffset(ref encoded, 16), map);
+    public static bool IsValid64(sbyte[] map, ref char encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8)) &&
+        IsValid16(map, ref Unsafe.AddByteOffset(ref encoded, 16));
 
-    public static bool IsValid64(ref byte encoded, sbyte[] map, out byte invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 4), map, out invalid) &&
-        IsValid16(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid);
+    public static bool IsValid64(sbyte[] map, ref byte encoded, out byte invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 4), out invalid) &&
+        IsValid16(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid);
 
-    public static bool IsValid64(ref char encoded, sbyte[] map, out char invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid24(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid) &&
-        IsValid16(ref Unsafe.AddByteOffset(ref encoded, 16), map, out invalid);
+    public static bool IsValid64(sbyte[] map, ref char encoded, out char invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid24(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid) &&
+        IsValid16(map, ref Unsafe.AddByteOffset(ref encoded, 16), out invalid);
 
     #endregion IsValid64
 
     #region Encode32
 
-    public static void Encode32(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode32(byte[] map, ref byte src, ref byte encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4), map);
+        Encode24(map, ref src, ref encoded);
+        Encode8(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 4));
     }
 
-    public static void Encode32(ref byte src, ref char encoded, char[] map)
+    public static void Encode32(char[] map, ref byte src, ref char encoded)
     {
-        Encode24(ref src, ref encoded, map);
-        Encode8(ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8), map);
+        Encode24(map, ref src, ref encoded);
+        Encode8(map, ref Unsafe.AddByteOffset(ref src, 3), ref Unsafe.AddByteOffset(ref encoded, 8));
     }
 
     #endregion Encode32
 
     #region Decode32
 
-    public static bool TryDecode32(ref byte encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map);
+    public static bool TryDecode32(sbyte[] map, ref byte encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3));
 
-    public static bool TryDecode32(ref char encoded, ref byte src, sbyte[] map) =>
-        TryDecode24(ref encoded, ref src, map) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map);
+    public static bool TryDecode32(sbyte[] map, ref char encoded, ref byte src) =>
+        TryDecode24(map, ref encoded, ref src) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3));
 
-    public static bool TryDecode32(ref byte encoded, ref byte src, sbyte[] map, out byte invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid);
+    public static bool TryDecode32(sbyte[] map, ref byte encoded, ref byte src, out byte invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 4), ref Unsafe.AddByteOffset(ref src, 3), out invalid);
 
-    public static bool TryDecode32(ref char encoded, ref byte src, sbyte[] map, out char invalid) =>
-        TryDecode24(ref encoded, ref src, map, out invalid) &&
-        TryDecode8(ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), map, out invalid);
+    public static bool TryDecode32(sbyte[] map, ref char encoded, ref byte src, out char invalid) =>
+        TryDecode24(map, ref encoded, ref src, out invalid) &&
+        TryDecode8(map, ref Unsafe.AddByteOffset(ref encoded, 8), ref Unsafe.AddByteOffset(ref src, 3), out invalid);
 
     #endregion Decode32
 
     #region IsValid32
 
-    public static bool IsValid32(ref byte encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 4), map);
+    public static bool IsValid32(sbyte[] map, ref byte encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 4));
 
-    public static bool IsValid32(ref char encoded, sbyte[] map) =>
-        IsValid24(ref encoded, map) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 8), map);
+    public static bool IsValid32(sbyte[] map, ref char encoded) =>
+        IsValid24(map, ref encoded) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 8));
 
-    public static bool IsValid32(ref byte encoded, sbyte[] map, out byte invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 4), map, out invalid);
+    public static bool IsValid32(sbyte[] map, ref byte encoded, out byte invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 4), out invalid);
 
-    public static bool IsValid32(ref char encoded, sbyte[] map, out char invalid) =>
-        IsValid24(ref encoded, map, out invalid) &&
-        IsValid8(ref Unsafe.AddByteOffset(ref encoded, 8), map, out invalid);
+    public static bool IsValid32(sbyte[] map, ref char encoded, out char invalid) =>
+        IsValid24(map, ref encoded, out invalid) &&
+        IsValid8(map, ref Unsafe.AddByteOffset(ref encoded, 8), out invalid);
 
     #endregion IsValid32
 
     #region Encode24
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode24(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode24(byte[] map, ref byte src, ref byte encoded)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
         encoded = map[i >> 18];
@@ -304,7 +304,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode24(ref byte src, ref char encoded, char[] map)
+    public static void Encode24(char[] map, ref byte src, ref char encoded)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
         encoded = map[i >> 18];
@@ -318,7 +318,7 @@ public static class UnsafeBase64
     #region Decode24
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode24(ref byte encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode24(sbyte[] map, ref byte encoded, ref byte src)
     {
         var val = map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12 |
                   map[Unsafe.AddByteOffset(ref encoded, 2)] << 6 | (int)map[Unsafe.AddByteOffset(ref encoded, 3)];
@@ -331,7 +331,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode24(ref char encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode24(sbyte[] map, ref char encoded, ref byte src)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -348,7 +348,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode24(ref byte encoded, ref byte src, sbyte[] map, out byte invalid)
+    public static bool TryDecode24(sbyte[] map, ref byte encoded, ref byte src, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         var i2 = Unsafe.AddByteOffset(ref encoded, 2);
@@ -368,7 +368,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode24(ref char encoded, ref byte src, sbyte[] map, out char invalid)
+    public static bool TryDecode24(sbyte[] map, ref char encoded, ref byte src, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -398,12 +398,12 @@ public static class UnsafeBase64
     #region IsValid24
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid24(ref byte encoded, sbyte[] map)
+    public static bool IsValid24(sbyte[] map, ref byte encoded)
         => (map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12 |
             map[Unsafe.AddByteOffset(ref encoded, 2)] << 6 | (int)map[Unsafe.AddByteOffset(ref encoded, 3)]) >= 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid24(ref char encoded, sbyte[] map)
+    public static bool IsValid24(sbyte[] map, ref char encoded)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -413,7 +413,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid24(ref byte encoded, sbyte[] map, out byte invalid)
+    public static bool IsValid24(sbyte[] map, ref byte encoded, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         var i2 = Unsafe.AddByteOffset(ref encoded, 2);
@@ -428,7 +428,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid24(ref char encoded, sbyte[] map, out char invalid)
+    public static bool IsValid24(sbyte[] map, ref char encoded, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -452,7 +452,7 @@ public static class UnsafeBase64
     #region Encode16
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode16(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode16(byte[] map, ref byte src, ref byte encoded)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
         encoded = map[i >> 18];
@@ -461,7 +461,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode16(ref byte src, ref char encoded, char[] map)
+    public static void Encode16(char[] map, ref byte src, ref char encoded)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
         encoded = map[i >> 18];
@@ -474,7 +474,7 @@ public static class UnsafeBase64
     #region Decode16
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode16(ref byte encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode16(sbyte[] map, ref byte encoded, ref byte src)
     {
         var val = map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12 |
                   map[Unsafe.AddByteOffset(ref encoded, 2)] << 6;
@@ -486,7 +486,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode16(ref char encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode16(sbyte[] map, ref char encoded, ref byte src)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -501,7 +501,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode16(ref byte encoded, ref byte src, sbyte[] map, out byte invalid)
+    public static bool TryDecode16(sbyte[] map, ref byte encoded, ref byte src, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         var i2 = Unsafe.AddByteOffset(ref encoded, 2);
@@ -519,7 +519,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode16(ref char encoded, ref byte src, sbyte[] map, out char invalid)
+    public static bool TryDecode16(sbyte[] map, ref char encoded, ref byte src, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -547,12 +547,12 @@ public static class UnsafeBase64
     #region IsValid16
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid16(ref byte encoded, sbyte[] map)
+    public static bool IsValid16(sbyte[] map, ref byte encoded)
         => (map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12 |
             map[Unsafe.AddByteOffset(ref encoded, 2)] << 6) >= 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid16(ref char encoded, sbyte[] map)
+    public static bool IsValid16(sbyte[] map, ref char encoded)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -562,7 +562,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid16(ref byte encoded, sbyte[] map, out byte invalid)
+    public static bool IsValid16(sbyte[] map, ref byte encoded, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         var i2 = Unsafe.AddByteOffset(ref encoded, 2);
@@ -576,7 +576,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid16(ref char encoded, sbyte[] map, out char invalid)
+    public static bool IsValid16(sbyte[] map, ref char encoded, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         var i2 = Unsafe.AddByteOffset(ref encoded, 4);
@@ -599,7 +599,7 @@ public static class UnsafeBase64
     #region Encode8
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode8(ref byte src, ref byte encoded, byte[] map)
+    public static void Encode8(byte[] map, ref byte src, ref byte encoded)
     {
         int i = src << 8;
         encoded = map[i >> 10];
@@ -611,7 +611,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode8(ref byte src, ref char encoded, char[] map)
+    public static void Encode8(char[] map, ref byte src, ref char encoded)
     {
         int i = src << 8;
         encoded = map[i >> 10];
@@ -626,7 +626,7 @@ public static class UnsafeBase64
     #region Decode8
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode8(ref byte encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode8(sbyte[] map, ref byte encoded, ref byte src)
     {
         var val = map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12;
         if (val < 0) return false;
@@ -636,7 +636,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode8(ref char encoded, ref byte src, sbyte[] map)
+    public static bool TryDecode8(sbyte[] map, ref char encoded, ref byte src)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         if (((encoded | i1) & 0xffffff00) != 0) return false;
@@ -652,7 +652,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode8(ref byte encoded, ref byte src, sbyte[] map, out byte invalid)
+    public static bool TryDecode8(sbyte[] map, ref byte encoded, ref byte src, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         var val = map[encoded] << 18 | map[i1] << 12;
@@ -668,7 +668,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryDecode8(ref char encoded, ref byte src, sbyte[] map, out char invalid)
+    public static bool TryDecode8(sbyte[] map, ref char encoded, ref byte src, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         if (((encoded | i1) & 0xffffff00) != 0)
@@ -694,11 +694,11 @@ public static class UnsafeBase64
     #region IsValid8
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid8(ref byte encoded, sbyte[] map)
+    public static bool IsValid8(sbyte[] map, ref byte encoded)
         => (map[encoded] << 18 | map[Unsafe.AddByteOffset(ref encoded, 1)] << 12) >= 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid8(ref char encoded, sbyte[] map)
+    public static bool IsValid8(sbyte[] map, ref char encoded)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         if (((encoded | i1) & 0xffffff00) != 0) return false;
@@ -710,7 +710,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid8(ref byte encoded, sbyte[] map, out byte invalid)
+    public static bool IsValid8(sbyte[] map, ref byte encoded, out byte invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 1);
         if ((map[encoded] << 18 | map[i1] << 12) < 0)
@@ -723,7 +723,7 @@ public static class UnsafeBase64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsValid8(ref char encoded, sbyte[] map, out char invalid)
+    public static bool IsValid8(sbyte[] map, ref char encoded, out char invalid)
     {
         var i1 = Unsafe.AddByteOffset(ref encoded, 2);
         if (((encoded | i1) & 0xffffff00) != 0)

@@ -214,20 +214,20 @@ public class Base64UrlBenchmark
 
     private static string VectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
+        Base64Url.VectorEncode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
     private static string VectorEncodeToStringRef(Guid value)
     {
         var newStr = new string('\0', 22);
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()), Base64Url.Chars);
+        Base64Url.VectorEncode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()));
         return newStr;
     }
 
     private static byte[] VectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
+        Base64Url.VectorEncode128(Base64Url.Bytes, ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0]);
         return encodedBytes;
     }
 
@@ -235,7 +235,7 @@ public class Base64UrlBenchmark
     {
         Guid guid = default;
         //TODO: ref Unsafe.AsRef(in encoded.GetPinnableReference())
-        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
+        Base64Url.TryVectorDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 
@@ -243,40 +243,40 @@ public class Base64UrlBenchmark
     {
         Guid guid = default;
         //ref encoded[0]
-        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
+        Base64Url.TryVectorDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 
     private static string NoVectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars), Base64Url.Chars);
+        UnsafeBase64.Encode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
     private static string NoVectorEncodeToStringRef(Guid value)
     {
         var newStr = new string('\0', 22);
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()), Base64Url.Chars);
+        UnsafeBase64.Encode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()));
         return newStr;
     }
 
     private static byte[] NoVectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        UnsafeBase64.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0], Base64Url.Bytes);
+        UnsafeBase64.Encode128(Base64Url.Bytes, ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0]);
         return encodedBytes;
     }
 
     private static Guid NoVectorDecodeFromString(string encoded)
     {
         Guid guid = default;
-        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
+        UnsafeBase64.TryDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 
     private static Guid NoVectorDecodeFromBytes(byte[] encoded)
     {
         Guid guid = default;
-        UnsafeBase64.TryDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid), Base64Url.Map);
+        UnsafeBase64.TryDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 }
