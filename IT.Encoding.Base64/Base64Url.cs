@@ -447,7 +447,7 @@ public static class Base64Url
 
     #endregion Decode128
 
-    #region IsValid128
+    #region Valid128
 
     public static EncodingStatus IsValid128(ReadOnlySpan<byte> encoded)
     {
@@ -497,7 +497,7 @@ public static class Base64Url
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
     }
 
-    #endregion IsValid128
+    #endregion Valid128
 
     #region Encode72
 
@@ -716,7 +716,7 @@ public static class Base64Url
 
     #endregion Decode72
 
-    #region IsValid72
+    #region Valid72
 
     public static EncodingStatus IsValid72(ReadOnlySpan<byte> encoded)
     {
@@ -766,7 +766,7 @@ public static class Base64Url
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid char");
     }
 
-    #endregion IsValid72
+    #endregion Valid72
 
     #region Encode64
 
@@ -955,7 +955,7 @@ public static class Base64Url
 
     #endregion Decode64
 
-    #region IsValid64
+    #region Valid64
 
     public static EncodingStatus IsValid64(ReadOnlySpan<byte> encoded)
     {
@@ -1005,7 +1005,7 @@ public static class Base64Url
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
     }
 
-    #endregion IsValid64
+    #endregion Valid64
 
     #region Encode32
 
@@ -1156,7 +1156,7 @@ public static class Base64Url
 
     #endregion Decode32
 
-    #region IsValid32
+    #region Valid32
 
     public static EncodingStatus IsValid32(ReadOnlySpan<byte> encoded)
     {
@@ -1206,7 +1206,7 @@ public static class Base64Url
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
     }
 
-    #endregion IsValid32
+    #endregion Valid32
 
     #region Fields
 
