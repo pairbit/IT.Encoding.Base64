@@ -1245,6 +1245,14 @@ public static class Base64Url
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Encode8(byte value, out ushort encoded)
+    {
+        var map = Bytes;
+        int i = value << 8;
+        encoded = (ushort)(map[i >> 10] | map[i >> 4 & 0x3F] << 8);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Encode8(byte value, out byte encoded0, out byte encoded1)
     {
         var map = Bytes;

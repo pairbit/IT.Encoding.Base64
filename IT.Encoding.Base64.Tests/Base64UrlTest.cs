@@ -197,6 +197,11 @@ public class Base64UrlTest
         Assert.That(chars[0], Is.EqualTo(char0));
         Assert.That(chars[1], Is.EqualTo(char1));
 
+        ushort ushort1 = default;
+        UnsafeBase64.Encode8(Base64Url.Bytes, ref value, ref Unsafe.As<ushort, byte>(ref ushort1));
+        Base64Url.Encode8(value, out ushort ushort2);
+        Assert.That(ushort1, Is.EqualTo(ushort2));
+
         return str;
     }
 
