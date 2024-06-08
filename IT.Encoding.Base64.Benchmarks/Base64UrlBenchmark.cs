@@ -214,20 +214,20 @@ public class Base64UrlBenchmark
 
     private static string VectorEncodeToString(Guid value) => string.Create(22, value, static (chars, value) =>
     {
-        Base64Url.VectorEncode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
     private static string VectorEncodeToStringRef(Guid value)
     {
         var newStr = new string('\0', 22);
-        Base64Url.VectorEncode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()));
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.AsRef(in newStr.GetPinnableReference()));
         return newStr;
     }
 
     private static byte[] VectorEncodeToBytes(Guid value)
     {
         var encodedBytes = new byte[22];
-        Base64Url.VectorEncode128(Base64Url.Bytes, ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0]);
+        Base64Url.VectorEncode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0]);
         return encodedBytes;
     }
 
@@ -235,7 +235,7 @@ public class Base64UrlBenchmark
     {
         Guid guid = default;
         //TODO: ref Unsafe.AsRef(in encoded.GetPinnableReference())
-        Base64Url.TryVectorDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
+        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 
@@ -243,7 +243,7 @@ public class Base64UrlBenchmark
     {
         Guid guid = default;
         //ref encoded[0]
-        Base64Url.TryVectorDecode128(Base64Url.Map, ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
+        Base64Url.TryVectorDecode128(ref MemoryMarshal.GetReference(encoded.AsSpan()), ref Unsafe.As<Guid, byte>(ref guid));
         return guid;
     }
 

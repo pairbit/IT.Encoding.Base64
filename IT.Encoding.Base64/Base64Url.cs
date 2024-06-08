@@ -12,7 +12,7 @@ public static class Base64Url
 {
     #region Encode128
 
-    public static void VectorEncode128(byte[] map, ref byte src, ref byte encoded)
+    public static void VectorEncode128(ref byte src, ref byte encoded)
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
@@ -67,16 +67,17 @@ public static class Base64Url
 
             v.AsByte().StoreUnsafe(ref encoded);
 
+            var map = Bytes;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16));
             UnsafeBase64.Encode8(map, ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20));
         }
         else
         {
-            UnsafeBase64.Encode128(map, ref src, ref encoded);
+            UnsafeBase64.Encode128(Bytes, ref src, ref encoded);
         }
     }
 
-    public static void VectorEncode128(char[] map, ref byte src, ref char encoded)
+    public static void VectorEncode128(ref byte src, ref char encoded)
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
@@ -138,16 +139,78 @@ public static class Base64Url
                 upper.StoreUnsafe(ref ptr, 8);
             }
 
+            var map = Chars;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32));
             UnsafeBase64.Encode8(map, ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 40));
         }
         else
         {
-            UnsafeBase64.Encode128(map, ref src, ref encoded);
+            UnsafeBase64.Encode128(Chars, ref src, ref encoded);
         }
     }
 
-    public static bool TryVectorDecode128(sbyte[] map, ref byte encoded, ref byte src)
+    public static EncodingStatus TryEncode128(UInt128 value, Span<byte> encoded)
+    {
+        if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryEncode128(UInt128 value, Span<char> encoded)
+    {
+        if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode128(UInt128 value, Span<byte> encoded)
+    {
+        if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode128(UInt128 value, Span<char> encoded)
+    {
+        if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    public static byte[] Encode128ToBytes(UInt128 value)
+    {
+        var encoded = new byte[22];
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    public static char[] Encode128ToChars(UInt128 value)
+    {
+        var encoded = new char[22];
+
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    public static string Encode128ToString(UInt128 value) => string.Create(22, value, static (chars, value) =>
+    {
+        VectorEncode128(ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(chars));
+    });
+
+    #endregion Encode128
+
+    #region Decode128
+
+    public static bool TryVectorDecode128(ref byte encoded, ref byte src)
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
@@ -202,15 +265,15 @@ public static class Base64Url
 
             vector.AsByte().StoreUnsafe(ref src);
 
-            return UnsafeBase64.TryDecode32(map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12));
+            return UnsafeBase64.TryDecode32(Map, ref Unsafe.AddByteOffset(ref encoded, 16), ref Unsafe.AddByteOffset(ref src, 12));
         }
         else
         {
-            return UnsafeBase64.TryDecode128(map, ref encoded, ref src);
+            return UnsafeBase64.TryDecode128(Map, ref encoded, ref src);
         }
     }
 
-    public static bool TryVectorDecode128(sbyte[] map, ref char encoded, ref byte src)
+    public static bool TryVectorDecode128(ref char encoded, ref byte src)
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
@@ -290,81 +353,20 @@ public static class Base64Url
 
             vector.AsByte().StoreUnsafe(ref src);
 
-            return UnsafeBase64.TryDecode32(map, ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12));
+            return UnsafeBase64.TryDecode32(Map, ref Unsafe.AddByteOffset(ref encoded, 32), ref Unsafe.AddByteOffset(ref src, 12));
         }
         else
         {
-            return UnsafeBase64.TryDecode128(map, ref encoded, ref src);
+            return UnsafeBase64.TryDecode128(Map, ref encoded, ref src);
         }
     }
-
-    public static EncodingStatus TryEncode128(UInt128 value, Span<byte> encoded)
-    {
-        if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
-
-        VectorEncode128(Bytes, ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
-
-        return EncodingStatus.Done;
-    }
-
-    public static EncodingStatus TryEncode128(UInt128 value, Span<char> encoded)
-    {
-        if (encoded.Length < 22) return EncodingStatus.InvalidDestinationLength;
-
-        VectorEncode128(Chars, ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
-
-        return EncodingStatus.Done;
-    }
-
-    /// <exception cref="ArgumentOutOfRangeException"/>
-    public static void Encode128(UInt128 value, Span<byte> encoded)
-    {
-        if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
-
-        VectorEncode128(Bytes, ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
-    }
-
-    /// <exception cref="ArgumentOutOfRangeException"/>
-    public static void Encode128(UInt128 value, Span<char> encoded)
-    {
-        if (encoded.Length < 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 22");
-
-        VectorEncode128(Chars, ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
-    }
-
-    public static byte[] Encode128ToBytes(UInt128 value)
-    {
-        var encoded = new byte[22];
-
-        VectorEncode128(Bytes, ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0]);
-
-        return encoded;
-    }
-
-    public static char[] Encode128ToChars(UInt128 value)
-    {
-        var encoded = new char[22];
-
-        VectorEncode128(Chars, ref Unsafe.As<UInt128, byte>(ref value), ref encoded[0]);
-
-        return encoded;
-    }
-
-    public static string Encode128ToString(UInt128 value) => string.Create(22, value, static (chars, value) =>
-    {
-        VectorEncode128(Chars, ref Unsafe.As<UInt128, byte>(ref value), ref MemoryMarshal.GetReference(chars));
-    });
-
-    #endregion Encode128
-
-    #region Decode128
 
     public static EncodingStatus TryDecode128(ReadOnlySpan<byte> encoded, out UInt128 value)
     {
         value = default;
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
 
-        if (!TryVectorDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value)))
+        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value)))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -377,7 +379,7 @@ public static class Base64Url
         value = default;
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
 
-        if (!TryVectorDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value)))
+        if (!TryVectorDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value)))
         {
             value = default;
             return EncodingStatus.InvalidData;
