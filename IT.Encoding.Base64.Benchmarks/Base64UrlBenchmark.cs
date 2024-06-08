@@ -44,7 +44,7 @@ public class Base64UrlBenchmark
 
     #region EncodeToBytes
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
     //[Benchmark]
@@ -60,26 +60,26 @@ public class Base64UrlBenchmark
 
     #region DecodeFromString
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromString_gfoidl() => gfoidlDecodeFromString(_encodedString);
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromString_IT_Vector() => VectorDecodeFromString(_encodedString);
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromString_IT_NoVector() => NoVectorDecodeFromString(_encodedString);
 
     #endregion DecodeFromString
 
     #region DecodeFromBytes
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromBytes_gfoidl() => gfoidlDecodeFromBytes(_encodedBytes);
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromBytes_IT_Vector() => VectorDecodeFromBytes(_encodedBytes);
 
-    [Benchmark]
+    //[Benchmark]
     public Guid DecodeFromBytes_IT_NoVector() => NoVectorDecodeFromBytes(_encodedBytes);
 
     #endregion DecodeFromBytes
@@ -145,14 +145,8 @@ public class Base64UrlBenchmark
         Span<byte> guidBytes = stackalloc byte[16];
         Unsafe.As<byte, Guid>(ref MemoryMarshal.GetReference(guidBytes)) = guid;
 
-        var encodedBytes = new byte[22];
-        System.Buffers.Text.Base64.EncodeToUtf8(guidBytes[..15], encodedBytes, out _, out _);
-
-        Span<byte> last = stackalloc byte[4];
-        System.Buffers.Text.Base64.EncodeToUtf8(guidBytes[15..], last, out _, out _);
-
-        encodedBytes[20] = last[0];
-        encodedBytes[21] = last[1];
+        Span<byte> encodedBytes = stackalloc byte[24];
+        System.Buffers.Text.Base64.EncodeToUtf8(guidBytes, encodedBytes, out _, out _);
 
         for (var i = 0; i < 22; i++)
         {
@@ -167,7 +161,9 @@ public class Base64UrlBenchmark
                     break;
             }
         }
-        return encodedBytes;
+        var bytes = new byte[22];
+        encodedBytes[..22].CopyTo(bytes);
+        return bytes;
     }
 
     private static string gfoidlEncodeToString(Guid value)
