@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace IT.Encoding.Base64;
 
@@ -20,4 +21,29 @@ public static class Base64
             chars[i] = (char)Unsafe.AddByteOffset(ref b, i);
         }
     });
+
+    public static EncodingStatus TryToChars<T>(T encoded, Span<char> chars) where T : unmanaged
+    {
+        if (chars.Length < Unsafe.SizeOf<T>()) return EncodingStatus.InvalidDestinationLength;
+
+        ref byte b = ref Unsafe.As<T, byte>(ref encoded);
+        chars[0] = (char)b;
+        for (int i = 1; i < chars.Length; i++)
+        {
+            chars[i] = (char)Unsafe.AddByteOffset(ref b, i);
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static char[] ToChars<T>(T encoded) where T : unmanaged
+    {
+        var chars = new char[Unsafe.SizeOf<T>()];
+        ref byte b = ref Unsafe.As<T, byte>(ref encoded);
+        chars[0] = (char)b;
+        for (int i = 1; i < chars.Length; i++)
+        {
+            chars[i] = (char)Unsafe.AddByteOffset(ref b, i);
+        }
+        return chars;
+    }
 }
