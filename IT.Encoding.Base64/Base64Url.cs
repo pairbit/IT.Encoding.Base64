@@ -944,6 +944,29 @@ public static class Base64Url
         UnsafeBase64.Encode16(Chars, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Encode16(ushort value, out byte encoded0, out byte encoded1, out byte encoded2)
+    {
+        var map = Bytes;
+        //TODO: refactoring
+        ref byte src = ref Unsafe.As<ushort, byte>(ref value);
+        int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
+        encoded0 = map[i >> 18];
+        encoded1 = map[i >> 12 & 0x3F];
+        encoded2 = map[i >> 6 & 0x3F];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Encode16(ushort value, out char encoded0, out char encoded1, out char encoded2)
+    {
+        var map = Chars;
+        ref byte src = ref Unsafe.As<ushort, byte>(ref value);
+        int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8;
+        encoded0 = map[i >> 18];
+        encoded1 = map[i >> 12 & 0x3F];
+        encoded2 = map[i >> 6 & 0x3F];
+    }
+
     public static byte[] Encode16ToBytes(ushort value)
     {
         var encoded = new byte[3];

@@ -2,7 +2,7 @@
 
 namespace IT.Encoding.Base64.Tests;
 
-[StructLayout(LayoutKind.Sequential, Pack = 2)]
+[StructLayout(LayoutKind.Sequential, Size = 22)]
 public readonly struct Struct176
 {
     public ulong L0 { get; init; }

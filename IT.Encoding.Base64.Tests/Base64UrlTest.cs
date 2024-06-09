@@ -372,13 +372,15 @@ public class Base64UrlTest
         Assert.That(decoded, Is.EqualTo(defaultValue));
         Assert.That(invalidChar, Is.EqualTo(default(char)));
 
-        //Base64Url.Encode16(value, out byte byte0, out byte byte1);
-        //Assert.That(bytes[0], Is.EqualTo(byte0));
-        //Assert.That(bytes[1], Is.EqualTo(byte1));
+        Base64Url.Encode16(value, out byte byte0, out byte byte1, out byte byte2);
+        Assert.That(bytes[0], Is.EqualTo(byte0));
+        Assert.That(bytes[1], Is.EqualTo(byte1));
+        Assert.That(bytes[2], Is.EqualTo(byte2));
 
-        //Base64Url.Encode16(value, out char char0, out char char1);
-        //Assert.That(chars[0], Is.EqualTo(char0));
-        //Assert.That(chars[1], Is.EqualTo(char1));
+        Base64Url.Encode16(value, out char char0, out char char1, out char char2);
+        Assert.That(chars[0], Is.EqualTo(char0));
+        Assert.That(chars[1], Is.EqualTo(char1));
+        Assert.That(chars[2], Is.EqualTo(char2));
 
         //ushort ushort1 = default;
         //UnsafeBase64.Encode16(Base64Url.Bytes, ref value, ref Unsafe.As<ushort, byte>(ref ushort1));
