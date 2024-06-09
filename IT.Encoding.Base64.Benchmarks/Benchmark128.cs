@@ -50,105 +50,12 @@ public class Benchmark128
 
     //[Benchmark]
     public string EncodeToString_IT_Ref() => NoVectorEncodeToStringRef(_guid);
-    
-    [Benchmark]
-    public string EncodedToString_IT() => Base64.ToString(_encodedStruct);
 
     [Benchmark]
-    public string EncodedToString_IT2() => string.Create(22, _encodedStruct, static (chars, encoded) =>
-    {
-        ref char ch = ref MemoryMarshal.GetReference(chars);
-        ref byte b = ref Unsafe.As<Struct176, byte>(ref encoded);
-        ch = (char)b; 
-        Unsafe.AddByteOffset(ref ch, 2) = (char)Unsafe.AddByteOffset(ref b, 1);
-        Unsafe.AddByteOffset(ref ch, 4) = (char)Unsafe.AddByteOffset(ref b, 2);
-        Unsafe.AddByteOffset(ref ch, 6) = (char)Unsafe.AddByteOffset(ref b, 3);
-        Unsafe.AddByteOffset(ref ch, 8) = (char)Unsafe.AddByteOffset(ref b, 4);
-        Unsafe.AddByteOffset(ref ch, 10) = (char)Unsafe.AddByteOffset(ref b, 5);
-        Unsafe.AddByteOffset(ref ch, 12) = (char)Unsafe.AddByteOffset(ref b, 6);
-        Unsafe.AddByteOffset(ref ch, 14) = (char)Unsafe.AddByteOffset(ref b, 7);
-        Unsafe.AddByteOffset(ref ch, 16) = (char)Unsafe.AddByteOffset(ref b, 8);
-        Unsafe.AddByteOffset(ref ch, 18) = (char)Unsafe.AddByteOffset(ref b, 9);
-        Unsafe.AddByteOffset(ref ch, 20) = (char)Unsafe.AddByteOffset(ref b, 10);
-        Unsafe.AddByteOffset(ref ch, 22) = (char)Unsafe.AddByteOffset(ref b, 11);
-        Unsafe.AddByteOffset(ref ch, 24) = (char)Unsafe.AddByteOffset(ref b, 12);
-        Unsafe.AddByteOffset(ref ch, 26) = (char)Unsafe.AddByteOffset(ref b, 13);
-        Unsafe.AddByteOffset(ref ch, 28) = (char)Unsafe.AddByteOffset(ref b, 14);
-        Unsafe.AddByteOffset(ref ch, 30) = (char)Unsafe.AddByteOffset(ref b, 15);
-        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref b, 16);
-        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref b, 17);
-        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref b, 18);
-        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref b, 19);
-        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref b, 20);
-        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref b, 21);
-    });
+    public string EncodedToString_IT() => UnsafeBase64.ToString176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct));
 
     [Benchmark]
-    public string EncodedToString_IT2_Ref()
-    {
-        var newStr = new string('\0', 22);
-        ref char ch = ref Unsafe.AsRef(in newStr.GetPinnableReference());
-        ref byte b = ref Unsafe.As<Struct176, byte>(ref _encodedStruct);
-        ch = (char)b;
-        Unsafe.AddByteOffset(ref ch, 2) = (char)Unsafe.AddByteOffset(ref b, 1);
-        Unsafe.AddByteOffset(ref ch, 4) = (char)Unsafe.AddByteOffset(ref b, 2);
-        Unsafe.AddByteOffset(ref ch, 6) = (char)Unsafe.AddByteOffset(ref b, 3);
-        Unsafe.AddByteOffset(ref ch, 8) = (char)Unsafe.AddByteOffset(ref b, 4);
-        Unsafe.AddByteOffset(ref ch, 10) = (char)Unsafe.AddByteOffset(ref b, 5);
-        Unsafe.AddByteOffset(ref ch, 12) = (char)Unsafe.AddByteOffset(ref b, 6);
-        Unsafe.AddByteOffset(ref ch, 14) = (char)Unsafe.AddByteOffset(ref b, 7);
-        Unsafe.AddByteOffset(ref ch, 16) = (char)Unsafe.AddByteOffset(ref b, 8);
-        Unsafe.AddByteOffset(ref ch, 18) = (char)Unsafe.AddByteOffset(ref b, 9);
-        Unsafe.AddByteOffset(ref ch, 20) = (char)Unsafe.AddByteOffset(ref b, 10);
-        Unsafe.AddByteOffset(ref ch, 22) = (char)Unsafe.AddByteOffset(ref b, 11);
-        Unsafe.AddByteOffset(ref ch, 24) = (char)Unsafe.AddByteOffset(ref b, 12);
-        Unsafe.AddByteOffset(ref ch, 26) = (char)Unsafe.AddByteOffset(ref b, 13);
-        Unsafe.AddByteOffset(ref ch, 28) = (char)Unsafe.AddByteOffset(ref b, 14);
-        Unsafe.AddByteOffset(ref ch, 30) = (char)Unsafe.AddByteOffset(ref b, 15);
-        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref b, 16);
-        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref b, 17);
-        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref b, 18);
-        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref b, 19);
-        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref b, 20);
-        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref b, 21);
-        return newStr;
-    }
-
-    [Benchmark]
-    public string EncodedToString_IT_Vector() => string.Create(22, _encodedStruct, static (chars, encoded) =>
-    {
-        ref char ch = ref MemoryMarshal.GetReference(chars);
-        ref byte b = ref Unsafe.As<Struct176, byte>(ref encoded);
-        ref short s = ref Unsafe.As<char, short>(ref ch);
-        var v = Vector128.LoadUnsafe(ref b);
-        Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
-        Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
-        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref b, 16);
-        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref b, 17);
-        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref b, 18);
-        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref b, 19);
-        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref b, 20);
-        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref b, 21);
-    });
-
-    [Benchmark]
-    public string EncodedToString_IT_VectorRef()
-    {
-        var newStr = new string('\0', 22);
-        ref char ch = ref Unsafe.AsRef(in newStr.GetPinnableReference());
-        ref byte b = ref Unsafe.As<Struct176, byte>(ref _encodedStruct);
-        ref short s = ref Unsafe.As<char, short>(ref ch);
-        var v = Vector128.LoadUnsafe(ref b);
-        Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
-        Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
-        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref b, 16);
-        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref b, 17);
-        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref b, 18);
-        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref b, 19);
-        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref b, 20);
-        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref b, 21);
-        return newStr;
-    }
+    public string EncodedToString_IT_Vector() => VectorBase64.ToString176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct));
 
     #endregion EncodeToString
 
@@ -162,7 +69,7 @@ public class Benchmark128
 
     [Benchmark]
     public byte[] EncodeToBytes_IT_Vector() => VectorEncodeToBytes(_guid);
-    
+
     [Benchmark]
     public Struct176 EncodeToStruct_IT_Vector() => VectorEncodeToStruct(_guid);
 
@@ -215,9 +122,7 @@ public class Benchmark128
             if (!str.Equals(EncodeToString_IT_Vector())) throw new InvalidOperationException(nameof(EncodeToString_IT_Vector));
             if (!str.Equals(EncodeToString_IT_VectorRef())) throw new InvalidOperationException(nameof(EncodeToString_IT_VectorRef));
             if (!str.Equals(EncodedToString_IT())) throw new InvalidOperationException(nameof(EncodedToString_IT));
-            if (!str.Equals(EncodedToString_IT2())) throw new InvalidOperationException(nameof(EncodedToString_IT2));
             if (!str.Equals(EncodedToString_IT_Vector())) throw new InvalidOperationException(nameof(EncodedToString_IT_Vector));
-            if (!str.Equals(EncodedToString_IT_VectorRef())) throw new InvalidOperationException(nameof(EncodedToString_IT_VectorRef));
 
             var bytes = EncodeToBytes_Simple();
             if (!bytes.SequenceEqual(EncodeToBytes_gfoidl())) throw new InvalidOperationException(nameof(EncodeToBytes_gfoidl));

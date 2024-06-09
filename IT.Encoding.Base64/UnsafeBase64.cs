@@ -741,4 +741,33 @@ public static class UnsafeBase64
     }
 
     #endregion IsValid8
+
+    public static string ToString176(ref byte encoded)
+    {
+        var str = new string('\0', 22);
+        ref char ch = ref Unsafe.AsRef(in str.GetPinnableReference());
+        ch = (char)encoded;
+        Unsafe.AddByteOffset(ref ch, 2) = (char)Unsafe.AddByteOffset(ref encoded, 1);
+        Unsafe.AddByteOffset(ref ch, 4) = (char)Unsafe.AddByteOffset(ref encoded, 2);
+        Unsafe.AddByteOffset(ref ch, 6) = (char)Unsafe.AddByteOffset(ref encoded, 3);
+        Unsafe.AddByteOffset(ref ch, 8) = (char)Unsafe.AddByteOffset(ref encoded, 4);
+        Unsafe.AddByteOffset(ref ch, 10) = (char)Unsafe.AddByteOffset(ref encoded, 5);
+        Unsafe.AddByteOffset(ref ch, 12) = (char)Unsafe.AddByteOffset(ref encoded, 6);
+        Unsafe.AddByteOffset(ref ch, 14) = (char)Unsafe.AddByteOffset(ref encoded, 7);
+        Unsafe.AddByteOffset(ref ch, 16) = (char)Unsafe.AddByteOffset(ref encoded, 8);
+        Unsafe.AddByteOffset(ref ch, 18) = (char)Unsafe.AddByteOffset(ref encoded, 9);
+        Unsafe.AddByteOffset(ref ch, 20) = (char)Unsafe.AddByteOffset(ref encoded, 10);
+        Unsafe.AddByteOffset(ref ch, 22) = (char)Unsafe.AddByteOffset(ref encoded, 11);
+        Unsafe.AddByteOffset(ref ch, 24) = (char)Unsafe.AddByteOffset(ref encoded, 12);
+        Unsafe.AddByteOffset(ref ch, 26) = (char)Unsafe.AddByteOffset(ref encoded, 13);
+        Unsafe.AddByteOffset(ref ch, 28) = (char)Unsafe.AddByteOffset(ref encoded, 14);
+        Unsafe.AddByteOffset(ref ch, 30) = (char)Unsafe.AddByteOffset(ref encoded, 15);
+        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref encoded, 16);
+        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref encoded, 17);
+        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref encoded, 18);
+        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref encoded, 19);
+        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref encoded, 20);
+        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref encoded, 21);
+        return str;
+    }
 }
