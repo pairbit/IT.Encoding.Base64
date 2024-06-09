@@ -225,6 +225,11 @@ public class Base64UrlTest
         Assert.That(Base64Url.Encode8ToUInt16(value), Is.EqualTo(uint16));
         Assert.That(Base64.ToString(uint16), Is.EqualTo(str));
         Assert.That(Base64.ToString((short)uint16), Is.EqualTo(str));
+        Assert.That(Base64.To<ushort>(str), Is.EqualTo(uint16));
+        Assert.That(Base64.TryTo<ushort>(str, out var uint16_2), Is.True);
+        Assert.That(uint16_2, Is.EqualTo(uint16));
+        Assert.That(Base64.TryTo<uint>(str, out var uint32), Is.False);
+        Assert.That(uint32, Is.EqualTo(default(uint)));
         return str;
     }
 

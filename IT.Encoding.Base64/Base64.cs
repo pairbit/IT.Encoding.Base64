@@ -46,4 +46,37 @@ public static class Base64
         }
         return chars;
     }
+
+    public static bool TryTo<T>(ReadOnlySpan<char> encoded, out T value) where T : unmanaged
+    {
+        value = default;
+        if (Unsafe.SizeOf<T>() != encoded.Length) return false;
+
+        ref byte b = ref Unsafe.As<T, byte>(ref value);
+
+        b = (byte)encoded[0];
+        for (int i = 1; i < encoded.Length; i++)
+        {
+            Unsafe.AddByteOffset(ref b, i) = (byte)encoded[i];
+        }
+
+        return true;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static T To<T>(ReadOnlySpan<char> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != encoded.Length) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, $"length != {Unsafe.SizeOf<T>()}");
+
+        T value = default;
+        ref byte b = ref Unsafe.As<T, byte>(ref value);
+
+        b = (byte)encoded[0];
+        for (int i = 1; i < encoded.Length; i++)
+        {
+            Unsafe.AddByteOffset(ref b, i) = (byte)encoded[i];
+        }
+
+        return value;
+    }
 }
