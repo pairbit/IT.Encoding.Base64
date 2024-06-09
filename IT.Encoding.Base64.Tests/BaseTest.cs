@@ -1,12 +1,20 @@
-﻿using System.Runtime.Intrinsics;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 namespace IT.Encoding.Base64.Tests;
 
-public class IntrinsicsTest
+public class BaseTest
 {
     [Test]
-    public void Test()
+    public void SizeOfTest()
+    {
+        Assert.That(Unsafe.SizeOf<FileId>, Is.EqualTo(9));
+        Assert.That(Unsafe.SizeOf<Struct176>, Is.EqualTo(22));
+    }
+
+    [Test]
+    public void IntrinsicsTest()
     {
         Assert.That(BitConverter.IsLittleEndian, Is.True);
         Assert.That(Vector128.IsHardwareAccelerated, Is.True);

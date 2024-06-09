@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using IT.Encoding.Base64.Tests;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -13,6 +14,7 @@ public class Benchmark128
     private Guid _guid;
     private string _encodedString = null!;
     private byte[] _encodedBytes = null!;
+    private Struct176 _encodedStruct = default;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -20,6 +22,7 @@ public class Benchmark128
         _guid = Guid.NewGuid();
         _encodedString = EncodeToString_Simple();
         _encodedBytes = EncodeToBytes_Simple();
+        _encodedStruct = EncodeToStruct_IT_Vector();
     }
 
     #region EncodeToString
@@ -43,8 +46,11 @@ public class Benchmark128
     [Benchmark]
     public string EncodeToString_IT_NoVector() => NoVectorEncodeToString(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public string EncodeToString_IT_NoVectorRef() => NoVectorEncodeToStringRef(_guid);
+    
+    [Benchmark]
+    public string EncodedToString_IT() => Base64.ToString(_encodedStruct);
 
     #endregion EncodeToString
 
@@ -53,13 +59,16 @@ public class Benchmark128
     //[Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_gfoidl() => gfoidlEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT_Vector() => VectorEncodeToBytes(_guid);
+    
+    [Benchmark]
+    public Struct176 EncodeToStruct_IT_Vector() => VectorEncodeToStruct(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT_NoVector() => NoVectorEncodeToBytes(_guid);
 
     #endregion EncodeToBytes
@@ -96,7 +105,7 @@ public class Benchmark128
 
     public void Test()
     {
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 100; i++)
         {
             GlobalSetup();
 
@@ -107,6 +116,7 @@ public class Benchmark128
             if (!str.Equals(EncodeToString_IT_NoVectorRef())) throw new InvalidOperationException(nameof(EncodeToString_IT_NoVectorRef));
             if (!str.Equals(EncodeToString_IT_Vector())) throw new InvalidOperationException(nameof(EncodeToString_IT_Vector));
             if (!str.Equals(EncodeToString_IT_VectorRef())) throw new InvalidOperationException(nameof(EncodeToString_IT_VectorRef));
+            if (!str.Equals(EncodedToString_IT())) throw new InvalidOperationException(nameof(EncodedToString_IT));
 
             var bytes = EncodeToBytes_Simple();
             if (!bytes.SequenceEqual(EncodeToBytes_gfoidl())) throw new InvalidOperationException(nameof(EncodeToBytes_gfoidl));
@@ -217,6 +227,7 @@ public class Benchmark128
         VectorBase64Url.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
+    //fasters, why?
     private static string VectorEncodeToStringRef(Guid value)
     {
         var newStr = new string('\0', 22);
@@ -229,6 +240,13 @@ public class Benchmark128
         var encodedBytes = new byte[22];
         VectorBase64Url.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref encodedBytes[0]);
         return encodedBytes;
+    }
+
+    private static Struct176 VectorEncodeToStruct(Guid value)
+    {
+        Struct176 encodedStruct = default;
+        VectorBase64Url.Encode128(ref Unsafe.As<Guid, byte>(ref value), ref Unsafe.As<Struct176, byte>(ref encodedStruct));
+        return encodedStruct;
     }
 
     private static Guid VectorDecodeFromString(string encoded)
@@ -252,6 +270,7 @@ public class Benchmark128
         UnsafeBase64.Encode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
+    //Its slowly, why????
     private static string NoVectorEncodeToStringRef(Guid value)
     {
         var newStr = new string('\0', 22);
