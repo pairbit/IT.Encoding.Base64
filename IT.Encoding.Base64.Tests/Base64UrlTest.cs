@@ -91,16 +91,16 @@ public class Base64UrlTest
     [Test]
     public void Test72()
     {
-        Assert.That(Test72(new FileId(ulong.MinValue, byte.MinValue)), Is.EqualTo("AAAAAAAAAAAA"));
-        Assert.That(Test72(new FileId(ulong.MaxValue, byte.MaxValue)), Is.EqualTo("____________"));
-        Assert.That(Test72(new FileId(2235381257586707384, 1)), Is.EqualTo("uIsFBGmrBR8B"));
-        Assert.That(Test72(new FileId(13495389474433244262, 1)), Is.EqualTo("ZpwjsTlBSbsB"));
-        Assert.That(Test72(new FileId(10416025566214361379, 0)), Is.EqualTo("IxGY5RAojZAA"));
+        Assert.That(Test72(new Struct72(ulong.MinValue, byte.MinValue)), Is.EqualTo("AAAAAAAAAAAA"));
+        Assert.That(Test72(new Struct72(ulong.MaxValue, byte.MaxValue)), Is.EqualTo("____________"));
+        Assert.That(Test72(new Struct72(2235381257586707384, 1)), Is.EqualTo("uIsFBGmrBR8B"));
+        Assert.That(Test72(new Struct72(13495389474433244262, 1)), Is.EqualTo("ZpwjsTlBSbsB"));
+        Assert.That(Test72(new Struct72(10416025566214361379, 0)), Is.EqualTo("IxGY5RAojZAA"));
 
         var random = Random.Shared;
         for (var i = 0; i < 100; i++)
         {
-            Test72(new FileId((ulong)random.NextInt64(), (byte)random.Next()));
+            Test72(new Struct72((ulong)random.NextInt64(), (byte)random.Next()));
         }
     }
 
@@ -865,8 +865,8 @@ public class Base64UrlTest
     {
         Assert.That(bytes.Length, Is.EqualTo(chars.Length));
 
-        FileId value = default;
-        FileId defaultValue = default;
+        Struct72 value = default;
+        Struct72 defaultValue = default;
         var m = _decodeMap;
         var offset = bytes.Length - 1;
         Span<byte> invalidBytes = stackalloc byte[bytes.Length];
