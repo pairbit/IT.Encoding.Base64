@@ -908,6 +908,205 @@ public static class Base64Url
 
     #endregion Valid32
 
+    #region Encode16
+
+    public static EncodingStatus TryEncode16(ushort value, Span<byte> encoded)
+    {
+        if (encoded.Length < 3) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode16(Bytes, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryEncode16(ushort value, Span<char> encoded)
+    {
+        if (encoded.Length < 3) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode16(Chars, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode16(ushort value, Span<byte> encoded)
+    {
+        if (encoded.Length < 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 3");
+
+        UnsafeBase64.Encode16(Bytes, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode16(ushort value, Span<char> encoded)
+    {
+        if (encoded.Length < 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 3");
+
+        UnsafeBase64.Encode16(Chars, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    public static byte[] Encode16ToBytes(ushort value)
+    {
+        var encoded = new byte[3];
+
+        UnsafeBase64.Encode16(Bytes, ref Unsafe.As<ushort, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    public static char[] Encode16ToChars(ushort value)
+    {
+        var encoded = new char[3];
+
+        UnsafeBase64.Encode16(Chars, ref Unsafe.As<ushort, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    public static string Encode16ToString(ushort value) => string.Create(3, value, static (chars, value) =>
+    {
+        UnsafeBase64.Encode16(Chars, ref Unsafe.As<ushort, byte>(ref value), ref MemoryMarshal.GetReference(chars));
+    });
+
+    #endregion Encode16
+
+    #region Decode16
+
+    public static EncodingStatus TryDecode16(ReadOnlySpan<byte> encoded, out ushort value)
+    {
+        value = default;
+        if (encoded.Length != 3) return EncodingStatus.InvalidDataLength;
+
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value)))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode16(ReadOnlySpan<char> encoded, out ushort value)
+    {
+        value = default;
+        if (encoded.Length != 3) return EncodingStatus.InvalidDataLength;
+
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value)))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode16(ReadOnlySpan<byte> encoded, out ushort value, out byte invalid)
+    {
+        value = default;
+        if (encoded.Length != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value), out invalid))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode16(ReadOnlySpan<char> encoded, out ushort value, out char invalid)
+    {
+        value = default;
+        if (encoded.Length != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value), out invalid))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static ushort Decode16(ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length != 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 3");
+
+        ushort value = 0;
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
+
+        return value;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static ushort Decode16(ReadOnlySpan<char> encoded)
+    {
+        if (encoded.Length != 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 3");
+
+        ushort value = 0;
+        if (!UnsafeBase64.TryDecode16(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<ushort, byte>(ref value), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
+
+        return value;
+    }
+
+    #endregion Decode16
+
+    #region Valid16
+
+    public static EncodingStatus TryValid16(ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length != 3) return EncodingStatus.InvalidDataLength;
+        return UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid16(ReadOnlySpan<char> encoded)
+    {
+        if (encoded.Length != 3) return EncodingStatus.InvalidDataLength;
+        return UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid16(ReadOnlySpan<byte> encoded, out byte invalid)
+    {
+        if (encoded.Length != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        return UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid16(ReadOnlySpan<char> encoded, out char invalid)
+    {
+        if (encoded.Length != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        return UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Valid16(ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length != 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 3");
+        if (!UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Valid16(ReadOnlySpan<char> encoded)
+    {
+        if (encoded.Length != 3) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 3");
+        if (!UnsafeBase64.IsValid16(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
+    }
+
+    #endregion Valid16
+
     #region Encode8
 
     public static EncodingStatus TryEncode8(byte value, Span<byte> encoded)
