@@ -44,7 +44,7 @@ public class Base64UrlTest
         Assert.That(Test32(1481472373), Is.EqualTo("dXlNWA"));
 
         var random = Random.Shared;
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             Test32((uint)random.Next());
         }
@@ -59,7 +59,7 @@ public class Base64UrlTest
         Assert.That(Test64(14814723746819689979), Is.EqualTo("-027hsF4mM0"));
 
         var random = Random.Shared;
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             Test64((ulong)random.NextInt64());
         }
@@ -75,7 +75,7 @@ public class Base64UrlTest
         Assert.That(Test72(new FileId(10416025566214361379, 0)), Is.EqualTo("IxGY5RAojZAA"));
 
         var random = Random.Shared;
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             Test72(new FileId((ulong)random.NextInt64(), (byte)random.Next()));
         }

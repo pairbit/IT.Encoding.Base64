@@ -8,7 +8,7 @@ namespace IT.Encoding.Base64.Benchmarks;
 [MemoryDiagnoser]
 [MinColumn, MaxColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest, MethodOrderPolicy.Declared)]
-public class Base64UrlBenchmark
+public class Benchmark128
 {
     private Guid _guid;
     private string _encodedString = null!;
