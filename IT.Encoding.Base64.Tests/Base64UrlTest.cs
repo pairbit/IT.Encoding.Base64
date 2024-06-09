@@ -201,7 +201,8 @@ public class Base64UrlTest
         UnsafeBase64.Encode8(Base64Url.Bytes, ref value, ref Unsafe.As<ushort, byte>(ref ushort1));
         Base64Url.Encode8(value, out ushort ushort2);
         Assert.That(ushort1, Is.EqualTo(ushort2));
-
+        Assert.That(Base64.ToString(ushort1), Is.EqualTo(str));
+        Assert.That(Base64.ToString((short)ushort1), Is.EqualTo(str));
         return str;
     }
 
