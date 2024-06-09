@@ -1167,14 +1167,6 @@ public static class Base64Url
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Encode8(byte value, out ushort encoded)
-    {
-        var map = Bytes;
-        int i = value << 8;
-        encoded = (ushort)(map[i >> 10] | map[i >> 4 & 0x3F] << 8);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Encode8(byte value, out byte encoded0, out byte encoded1)
     {
         var map = Bytes;
@@ -1190,6 +1182,14 @@ public static class Base64Url
         int i = value << 8;
         encoded0 = map[i >> 10];
         encoded1 = map[i >> 4 & 0x3F];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ushort Encode8ToUInt16(byte value)
+    {
+        var map = Bytes;
+        int i = value << 8;
+        return (ushort)(map[i >> 10] | map[i >> 4 & 0x3F] << 8);
     }
 
     public static byte[] Encode8ToBytes(byte value)
