@@ -46,10 +46,10 @@ public class Benchmark128
     public string EncodeToString_IT_VectorRef() => VectorEncodeToStringRef(_guid);
 
     [Benchmark]
-    public string EncodeToString_IT_NoVector() => NoVectorEncodeToString(_guid);
+    public string EncodeToString_IT() => NoVectorEncodeToString(_guid);
 
     //[Benchmark]
-    public string EncodeToString_IT_NoVectorRef() => NoVectorEncodeToStringRef(_guid);
+    public string EncodeToString_IT_Ref() => NoVectorEncodeToStringRef(_guid);
     
     [Benchmark]
     public string EncodedToString_IT() => Base64.ToString(_encodedStruct);
@@ -106,7 +106,7 @@ public class Benchmark128
     public Struct176 EncodeToStruct_IT_Vector() => VectorEncodeToStruct(_guid);
 
     [Benchmark]
-    public byte[] EncodeToBytes_IT_NoVector() => NoVectorEncodeToBytes(_guid);
+    public byte[] EncodeToBytes_IT() => NoVectorEncodeToBytes(_guid);
 
     #endregion EncodeToBytes
 
@@ -123,7 +123,7 @@ public class Benchmark128
     public Guid DecodeFromString_IT_Vector() => VectorDecodeFromString(_encodedString);
 
     //[Benchmark]
-    public Guid DecodeFromString_IT_NoVector() => NoVectorDecodeFromString(_encodedString);
+    public Guid DecodeFromString_IT() => NoVectorDecodeFromString(_encodedString);
 
     #endregion DecodeFromString
 
@@ -136,7 +136,7 @@ public class Benchmark128
     public Guid DecodeFromBytes_IT_Vector() => VectorDecodeFromBytes(_encodedBytes);
 
     //[Benchmark]
-    public Guid DecodeFromBytes_IT_NoVector() => NoVectorDecodeFromBytes(_encodedBytes);
+    public Guid DecodeFromBytes_IT() => NoVectorDecodeFromBytes(_encodedBytes);
 
     #endregion DecodeFromBytes
 
@@ -149,8 +149,8 @@ public class Benchmark128
             var str = EncodeToString_Convert();
             if (!str.Equals(EncodeToString_Simple())) throw new InvalidOperationException(nameof(EncodeToString_Simple));
             if (!str.Equals(EncodeToString_gfoidl())) throw new InvalidOperationException(nameof(EncodeToString_gfoidl));
-            if (!str.Equals(EncodeToString_IT_NoVector())) throw new InvalidOperationException(nameof(EncodeToString_IT_NoVector));
-            if (!str.Equals(EncodeToString_IT_NoVectorRef())) throw new InvalidOperationException(nameof(EncodeToString_IT_NoVectorRef));
+            if (!str.Equals(EncodeToString_IT())) throw new InvalidOperationException(nameof(EncodeToString_IT));
+            if (!str.Equals(EncodeToString_IT_Ref())) throw new InvalidOperationException(nameof(EncodeToString_IT_Ref));
             if (!str.Equals(EncodeToString_IT_Vector())) throw new InvalidOperationException(nameof(EncodeToString_IT_Vector));
             if (!str.Equals(EncodeToString_IT_VectorRef())) throw new InvalidOperationException(nameof(EncodeToString_IT_VectorRef));
             if (!str.Equals(EncodedToString_IT())) throw new InvalidOperationException(nameof(EncodedToString_IT));
@@ -159,7 +159,7 @@ public class Benchmark128
 
             var bytes = EncodeToBytes_Simple();
             if (!bytes.SequenceEqual(EncodeToBytes_gfoidl())) throw new InvalidOperationException(nameof(EncodeToBytes_gfoidl));
-            if (!bytes.SequenceEqual(EncodeToBytes_IT_NoVector())) throw new InvalidOperationException(nameof(EncodeToBytes_IT_NoVector));
+            if (!bytes.SequenceEqual(EncodeToBytes_IT())) throw new InvalidOperationException(nameof(EncodeToBytes_IT));
             if (!bytes.SequenceEqual(EncodeToBytes_IT_Vector())) throw new InvalidOperationException(nameof(EncodeToBytes_IT_Vector));
 
             if (!System.Text.Encoding.UTF8.GetString(bytes).Equals(str)) throw new InvalidOperationException();
@@ -167,10 +167,10 @@ public class Benchmark128
             var guid = _guid;
             if (!guid.Equals(DecodeFromString_Convert())) throw new InvalidOperationException(nameof(DecodeFromString_Convert));
             if (!guid.Equals(DecodeFromString_gfoidl())) throw new InvalidOperationException(nameof(DecodeFromString_gfoidl));
-            if (!guid.Equals(DecodeFromString_IT_NoVector())) throw new InvalidOperationException(nameof(DecodeFromString_IT_NoVector));
+            if (!guid.Equals(DecodeFromString_IT())) throw new InvalidOperationException(nameof(DecodeFromString_IT));
             if (!guid.Equals(DecodeFromString_IT_Vector())) throw new InvalidOperationException(nameof(DecodeFromString_IT_Vector));
             if (!guid.Equals(DecodeFromBytes_gfoidl())) throw new InvalidOperationException(nameof(DecodeFromBytes_gfoidl));
-            if (!guid.Equals(DecodeFromBytes_IT_NoVector())) throw new InvalidOperationException(nameof(DecodeFromBytes_IT_NoVector));
+            if (!guid.Equals(DecodeFromBytes_IT())) throw new InvalidOperationException(nameof(DecodeFromBytes_IT));
             if (!guid.Equals(DecodeFromBytes_IT_Vector())) throw new InvalidOperationException(nameof(DecodeFromBytes_IT_Vector));
         }
     }
