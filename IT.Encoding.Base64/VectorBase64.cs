@@ -9,19 +9,26 @@ public static class VectorBase64
 {
     public static string ToString176(ref byte encoded)
     {
-        var str = new string('\0', 22);
-        ref char ch = ref Unsafe.AsRef(in str.GetPinnableReference());
-        ref short s = ref Unsafe.As<char, short>(ref ch);
-        var v = Vector128.LoadUnsafe(ref encoded);
-        Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
-        Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
-        Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref encoded, 16);
-        Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref encoded, 17);
-        Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref encoded, 18);
-        Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref encoded, 19);
-        Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref encoded, 20);
-        Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref encoded, 21);
-        return str;
+        if (Vector128.IsHardwareAccelerated)
+        {
+            var str = new string('\0', 22);
+            ref char ch = ref Unsafe.AsRef(in str.GetPinnableReference());
+            ref short s = ref Unsafe.As<char, short>(ref ch);
+            var v = Vector128.LoadUnsafe(ref encoded);
+            Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
+            Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
+            Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref encoded, 16);
+            Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref encoded, 17);
+            Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref encoded, 18);
+            Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref encoded, 19);
+            Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref encoded, 20);
+            Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref encoded, 21);
+            return str;
+        }
+        else
+        {
+            return UnsafeBase64.ToString176(ref encoded);
+        }
     }
 
     public static string ToString<T>(T encoded) where T : unmanaged
