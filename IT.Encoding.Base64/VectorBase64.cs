@@ -51,11 +51,4 @@ public static class VectorBase64
             return Base64.ToString(encoded);
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> LoadUnsafe(ref char src)
-    {
-        ref short ptr = ref Unsafe.As<char, short>(ref src);
-        return Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8));
-    }
 }
