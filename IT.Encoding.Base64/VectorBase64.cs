@@ -8,27 +8,24 @@ namespace IT.Encoding.Base64;
 
 public static class VectorBase64
 {
-    public static string ToString176(ref byte encoded)
+    public static void ToChar176(ref byte by, ref char ch)
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && Sse2.IsSupported)
         {
-            var str = new string('\0', 22);
-            ref char ch = ref Unsafe.AsRef(in str.GetPinnableReference());
             ref short s = ref Unsafe.As<char, short>(ref ch);
-            var v = Vector128.LoadUnsafe(ref encoded);
+            var v = Vector128.LoadUnsafe(ref by);
             Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
             Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
-            Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref encoded, 16);
-            Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref encoded, 17);
-            Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref encoded, 18);
-            Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref encoded, 19);
-            Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref encoded, 20);
-            Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref encoded, 21);
-            return str;
+            Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref by, 16);
+            Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref by, 17);
+            Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref by, 18);
+            Unsafe.AddByteOffset(ref ch, 38) = (char)Unsafe.AddByteOffset(ref by, 19);
+            Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref by, 20);
+            Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref by, 21);
         }
         else
         {
-            return UnsafeBase64.ToString176(ref encoded);
+            UnsafeBase64.ToChar176(ref by, ref ch);
         }
     }
 

@@ -50,10 +50,20 @@ public class Benchmark128
     public string EncodeToString_IT_Ref() => NoVectorEncodeToStringRef(_guid);
 
     [Benchmark]
-    public string EncodedToString_IT() => UnsafeBase64.ToString176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct));
+    public string EncodedToString_IT()
+    {
+        var str = new string('\0', 22);
+        UnsafeBase64.ToChar176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct), ref Unsafe.AsRef(in str.GetPinnableReference()));
+        return str;
+    }
 
     [Benchmark]
-    public string EncodedToString_IT_Vector() => VectorBase64.ToString176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct));
+    public string EncodedToString_IT_Vector()
+    {
+        var str = new string('\0', 22);
+        VectorBase64.ToChar176(ref Unsafe.As<Struct176, byte>(ref _encodedStruct), ref Unsafe.AsRef(in str.GetPinnableReference()));
+        return str;
+    }
 
     #endregion EncodeToString
 
