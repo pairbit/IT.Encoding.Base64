@@ -216,70 +216,46 @@ public static class VectorBase64Url
 
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> lutLo = Vector128.Create(
-                    1, 1, 0x2d, 0x30,
-                    0x41, 0x50, 0x61, 0x70,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                );
-                Vector128<sbyte> lutHi = Vector128.Create(
-                   0x00, 0x00, 0x2d, 0x39,
-                   0x4f, 0x5a, 0x6f, 0x7a,
-                   0x00, 0x00, 0x00, 0x00,
-                   0x00, 0x00, 0x00, 0x00
-                );
-                Vector128<sbyte> lutShift = Vector128.Create(
-                    0, 0, 17, 4,
-                  -65, -65, -71, -71,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0
-                );
-                Vector128<sbyte> mergeConstant0 = Vector128.Create(0x01400140).AsSByte();
-                Vector128<short> mergeConstant1 = Vector128.Create(0x00011000).AsInt16();
-                Vector128<sbyte> shuffleVec = Vector128.Create(
-                    2, 1, 0, 6,
-                    5, 4, 10, 9,
-                    8, 14, 13, 12,
-                   -1, -1, -1, -1
-                );
-
-                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
-                Vector128<sbyte> shiftForSlashOrUnderscore = Vector128.Create((sbyte)33);
-
                 ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-
                 vector = Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8)).AsSByte();
 
+                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
-
-                //////////////////////////////////////////
-                //if (!TBase64Encoder.TryDecode128Core(vector, hiNibbles, maskSlashOrUnderscore, lutLo, lutHi, lutShift, shiftForSlashOrUnderscore, out vector))
-                //    return false;
-
-                Vector128<sbyte> lowerBound = Ssse3.Shuffle(lutLo, hiNibbles);
-                Vector128<sbyte> upperBound = Ssse3.Shuffle(lutHi, hiNibbles);
-
-                Vector128<sbyte> below = Vector128.LessThan(vector, lowerBound);
-                Vector128<sbyte> above = Vector128.GreaterThan(vector, upperBound);
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
 
                 // Take care as arguments are flipped in order!
                 //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                Vector128<sbyte> outside = Vector128.AndNot(below | above, eq5F);
+                if (Vector128.AndNot(
+                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
+                        1, 1, 0x2d, 0x30,
+                        0x41, 0x50, 0x61, 0x70,
+                        1, 1, 1, 1,
+                        1, 1, 1, 1
+                    ), hiNibbles)) |
+                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
+                       0x00, 0x00, 0x2d, 0x39,
+                       0x4f, 0x5a, 0x6f, 0x7a,
+                       0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00
+                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
 
-                if (outside != Vector128<sbyte>.Zero) return false;
-
-                Vector128<sbyte> shift = Ssse3.Shuffle(lutShift, hiNibbles);
-                vector += shift;
-
-                vector += (eq5F & shiftForSlashOrUnderscore);
-
-                //////////////////////////////////////////
-
-                Vector128<short> merge_ab_and_bc = Ssse3.MultiplyAddAdjacent(vector.AsByte(), mergeConstant0);
-                Vector128<int> output = Sse2.MultiplyAddAdjacent(merge_ab_and_bc, mergeConstant1);
-
-                vector = Ssse3.Shuffle(output.AsSByte(), shuffleVec);
+                vector = Ssse3.Shuffle(
+                    Sse2.MultiplyAddAdjacent(
+                        Ssse3.MultiplyAddAdjacent(
+                            (vector + Ssse3.Shuffle(Vector128.Create(
+                                0, 0, 17, 4,
+                              -65, -65, -71, -71,
+                                0, 0, 0, 0,
+                                0, 0, 0, 0
+                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
+                            Vector128.Create(0x01400140).AsSByte()),
+                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
+                    Vector128.Create(
+                        2, 1, 0, 6,
+                        5, 4, 10, 9,
+                        8, 14, 13, 12,
+                       -1, -1, -1, -1
+                    ));
             }
             else
             {
@@ -376,58 +352,28 @@ public static class VectorBase64Url
 
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> lutLo = Vector128.Create(
-                    1, 1, 0x2d, 0x30,
-                    0x41, 0x50, 0x61, 0x70,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                );
-                Vector128<sbyte> lutHi = Vector128.Create(
-                   0x00, 0x00, 0x2d, 0x39,
-                   0x4f, 0x5a, 0x6f, 0x7a,
-                   0x00, 0x00, 0x00, 0x00,
-                   0x00, 0x00, 0x00, 0x00
-                );
-                Vector128<sbyte> lutShift = Vector128.Create(
-                    0, 0, 17, 4,
-                  -65, -65, -71, -71,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0
-                );
-                Vector128<sbyte> mergeConstant0 = Vector128.Create(0x01400140).AsSByte();
-                Vector128<short> mergeConstant1 = Vector128.Create(0x00011000).AsInt16();
-                Vector128<sbyte> shuffleVec = Vector128.Create(
-                    2, 1, 0, 6,
-                    5, 4, 10, 9,
-                    8, 14, 13, 12,
-                   -1, -1, -1, -1
-                );
-
-                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
-                Vector128<sbyte> shiftForSlashOrUnderscore = Vector128.Create((sbyte)33);
-
                 ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-
                 vector = Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8)).AsSByte();
 
+                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
-
-                //////////////////////////////////////////
-                //if (!TBase64Encoder.TryDecode128Core(vector, hiNibbles, maskSlashOrUnderscore, lutLo, lutHi, lutShift, shiftForSlashOrUnderscore, out vector))
-                //    return false;
-
-                Vector128<sbyte> lowerBound = Ssse3.Shuffle(lutLo, hiNibbles);
-                Vector128<sbyte> upperBound = Ssse3.Shuffle(lutHi, hiNibbles);
-
-                Vector128<sbyte> below = Vector128.LessThan(vector, lowerBound);
-                Vector128<sbyte> above = Vector128.GreaterThan(vector, upperBound);
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
 
                 // Take care as arguments are flipped in order!
                 //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                Vector128<sbyte> outside = Vector128.AndNot(below | above, eq5F);
-
-                if (outside != Vector128<sbyte>.Zero)
+                if (Vector128.AndNot(
+                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
+                        1, 1, 0x2d, 0x30,
+                        0x41, 0x50, 0x61, 0x70,
+                        1, 1, 1, 1,
+                        1, 1, 1, 1
+                    ), hiNibbles)) |
+                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
+                       0x00, 0x00, 0x2d, 0x39,
+                       0x4f, 0x5a, 0x6f, 0x7a,
+                       0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00
+                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
                 {
                     var map = Base64Url.Map;
                     for (int i = 0; i < 32; i += 2)
@@ -438,17 +384,23 @@ public static class VectorBase64Url
                     throw new InvalidOperationException("invalid not found");
                 }
 
-                Vector128<sbyte> shift = Ssse3.Shuffle(lutShift, hiNibbles);
-                vector += shift;
-
-                vector += (eq5F & shiftForSlashOrUnderscore);
-
-                //////////////////////////////////////////
-
-                Vector128<short> merge_ab_and_bc = Ssse3.MultiplyAddAdjacent(vector.AsByte(), mergeConstant0);
-                Vector128<int> output = Sse2.MultiplyAddAdjacent(merge_ab_and_bc, mergeConstant1);
-
-                vector = Ssse3.Shuffle(output.AsSByte(), shuffleVec);
+                vector = Ssse3.Shuffle(
+                    Sse2.MultiplyAddAdjacent(
+                        Ssse3.MultiplyAddAdjacent(
+                            (vector + Ssse3.Shuffle(Vector128.Create(
+                                0, 0, 17, 4,
+                              -65, -65, -71, -71,
+                                0, 0, 0, 0,
+                                0, 0, 0, 0
+                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
+                            Vector128.Create(0x01400140).AsSByte()),
+                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
+                    Vector128.Create(
+                        2, 1, 0, 6,
+                        5, 4, 10, 9,
+                        8, 14, 13, 12,
+                       -1, -1, -1, -1
+                    ));
             }
             else
             {
@@ -516,58 +468,28 @@ public static class VectorBase64Url
 
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> lutLo = Vector128.Create(
-                    1, 1, 0x2d, 0x30,
-                    0x41, 0x50, 0x61, 0x70,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                );
-                Vector128<sbyte> lutHi = Vector128.Create(
-                   0x00, 0x00, 0x2d, 0x39,
-                   0x4f, 0x5a, 0x6f, 0x7a,
-                   0x00, 0x00, 0x00, 0x00,
-                   0x00, 0x00, 0x00, 0x00
-                );
-                Vector128<sbyte> lutShift = Vector128.Create(
-                    0, 0, 17, 4,
-                  -65, -65, -71, -71,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0
-                );
-                Vector128<sbyte> mergeConstant0 = Vector128.Create(0x01400140).AsSByte();
-                Vector128<short> mergeConstant1 = Vector128.Create(0x00011000).AsInt16();
-                Vector128<sbyte> shuffleVec = Vector128.Create(
-                    2, 1, 0, 6,
-                    5, 4, 10, 9,
-                    8, 14, 13, 12,
-                   -1, -1, -1, -1
-                );
-
-                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
-                Vector128<sbyte> shiftForSlashOrUnderscore = Vector128.Create((sbyte)33);
-
                 ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-
                 vector = Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8)).AsSByte();
 
+                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
-
-                //////////////////////////////////////////
-                //if (!TBase64Encoder.TryDecode128Core(vector, hiNibbles, maskSlashOrUnderscore, lutLo, lutHi, lutShift, shiftForSlashOrUnderscore, out vector))
-                //    return false;
-
-                Vector128<sbyte> lowerBound = Ssse3.Shuffle(lutLo, hiNibbles);
-                Vector128<sbyte> upperBound = Ssse3.Shuffle(lutHi, hiNibbles);
-
-                Vector128<sbyte> below = Vector128.LessThan(vector, lowerBound);
-                Vector128<sbyte> above = Vector128.GreaterThan(vector, upperBound);
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
 
                 // Take care as arguments are flipped in order!
                 //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                Vector128<sbyte> outside = Vector128.AndNot(below | above, eq5F);
-
-                if (outside != Vector128<sbyte>.Zero) return false;
+                if (Vector128.AndNot(
+                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
+                        1, 1, 0x2d, 0x30,
+                        0x41, 0x50, 0x61, 0x70,
+                        1, 1, 1, 1,
+                        1, 1, 1, 1
+                    ), hiNibbles)) |
+                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
+                       0x00, 0x00, 0x2d, 0x39,
+                       0x4f, 0x5a, 0x6f, 0x7a,
+                       0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00
+                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
             }
             else
             {
@@ -642,58 +564,28 @@ public static class VectorBase64Url
 
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> lutLo = Vector128.Create(
-                    1, 1, 0x2d, 0x30,
-                    0x41, 0x50, 0x61, 0x70,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                );
-                Vector128<sbyte> lutHi = Vector128.Create(
-                   0x00, 0x00, 0x2d, 0x39,
-                   0x4f, 0x5a, 0x6f, 0x7a,
-                   0x00, 0x00, 0x00, 0x00,
-                   0x00, 0x00, 0x00, 0x00
-                );
-                Vector128<sbyte> lutShift = Vector128.Create(
-                    0, 0, 17, 4,
-                  -65, -65, -71, -71,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0
-                );
-                Vector128<sbyte> mergeConstant0 = Vector128.Create(0x01400140).AsSByte();
-                Vector128<short> mergeConstant1 = Vector128.Create(0x00011000).AsInt16();
-                Vector128<sbyte> shuffleVec = Vector128.Create(
-                    2, 1, 0, 6,
-                    5, 4, 10, 9,
-                    8, 14, 13, 12,
-                   -1, -1, -1, -1
-                );
-
-                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
-                Vector128<sbyte> shiftForSlashOrUnderscore = Vector128.Create((sbyte)33);
-
                 ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-
                 vector = Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8)).AsSByte();
 
+                Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
-
-                //////////////////////////////////////////
-                //if (!TBase64Encoder.TryDecode128Core(vector, hiNibbles, maskSlashOrUnderscore, lutLo, lutHi, lutShift, shiftForSlashOrUnderscore, out vector))
-                //    return false;
-
-                Vector128<sbyte> lowerBound = Ssse3.Shuffle(lutLo, hiNibbles);
-                Vector128<sbyte> upperBound = Ssse3.Shuffle(lutHi, hiNibbles);
-
-                Vector128<sbyte> below = Vector128.LessThan(vector, lowerBound);
-                Vector128<sbyte> above = Vector128.GreaterThan(vector, upperBound);
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
 
                 // Take care as arguments are flipped in order!
                 //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                Vector128<sbyte> outside = Vector128.AndNot(below | above, eq5F);
-
-                if (outside != Vector128<sbyte>.Zero)
+                if (Vector128.AndNot(
+                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
+                        1, 1, 0x2d, 0x30,
+                        0x41, 0x50, 0x61, 0x70,
+                        1, 1, 1, 1,
+                        1, 1, 1, 1
+                    ), hiNibbles)) |
+                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
+                       0x00, 0x00, 0x2d, 0x39,
+                       0x4f, 0x5a, 0x6f, 0x7a,
+                       0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00
+                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
                 {
                     var map = Base64Url.Map;
                     for (int i = 0; i < 32; i += 2)
@@ -703,7 +595,6 @@ public static class VectorBase64Url
                     }
                     throw new InvalidOperationException("invalid not found");
                 }
-                //////////////////////////////////////////
             }
             else
             {
