@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace IT.Encoding.Base64;
 
@@ -187,6 +188,16 @@ public static class UnsafeBase64
     #endregion IsValid120
 
     #region Encode96
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Int128 Encode96ToInt128(byte[] map, ref byte src)
+        => throw new NotImplementedException();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Guid Encode96ToGuid(byte[] map, ref byte src)
+    {
+        throw new NotImplementedException();
+    }
 
     public static void Encode96(byte[] map, ref byte src, ref byte encoded)
     {
@@ -395,6 +406,12 @@ public static class UnsafeBase64
     #endregion IsValid64
 
     #region Encode48
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long Encode48ToInt64(byte[] map, ref byte src)
+    {
+        throw new NotImplementedException();
+    }
 
     public static void Encode48(byte[] map, ref byte src, ref byte encoded)
     {
