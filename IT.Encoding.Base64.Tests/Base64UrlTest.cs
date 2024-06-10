@@ -145,10 +145,13 @@ public class Base64UrlTest
 
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
         Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo(str));
-
-        value = new Int128(5646395698327322037, 5097069996605788250);
-        Assert.That(Base64Url.Decode128("WlD9DihuvEa1_RfE-AZcTg"), Is.EqualTo(value));
         
+        Assert.That(Base64Url.Encode128ToString(Int128.MaxValue), Is.EqualTo("____________________fw"));
+
+        value = new Int128(10468201550123809991, 12468201550123822335);
+        Assert.That(Base64Url.Encode128ToString(value), Is.EqualTo("_-waH0DzB63HvFLQ2IVGkQ"));
+        Assert.That(Base64Url.Decode128("_-waH0DzB63HvFLQ2IVGkQ"), Is.EqualTo(value));
+
         var random = Random.Shared;
         for (var i = 0; i < 100; i++)
         {
