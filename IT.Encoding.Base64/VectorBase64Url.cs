@@ -181,7 +181,7 @@ public static class VectorBase64Url
             Vector128<sbyte> vector;
             if (Ssse3.IsSupported)
             {
-                vector = LoadUnsafe(ref encoded).AsSByte();
+                vector = VectorBase64.LoadUnsafe(ref encoded).AsSByte();
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
@@ -240,7 +240,7 @@ public static class VectorBase64Url
             Vector128<sbyte> vector;
             if (Ssse3.IsSupported)
             {
-                vector = LoadUnsafe(ref encoded).AsSByte();
+                vector = VectorBase64.LoadUnsafe(ref encoded).AsSByte();
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
@@ -291,7 +291,7 @@ public static class VectorBase64Url
         {
             if (Ssse3.IsSupported)
             {
-                if (!IsValid128(LoadUnsafe(ref encoded).AsSByte()))
+                if (!IsValid128(VectorBase64.LoadUnsafe(ref encoded).AsSByte()))
                     return false;
             }
             else
@@ -336,7 +336,7 @@ public static class VectorBase64Url
         {
             if (Ssse3.IsSupported)
             {
-                if (!IsValid128(LoadUnsafe(ref encoded).AsSByte()))
+                if (!IsValid128(VectorBase64.LoadUnsafe(ref encoded).AsSByte()))
                 {
                     invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 32);
                     return false;
@@ -352,13 +352,6 @@ public static class VectorBase64Url
         {
             return UnsafeBase64.IsValid128(Base64Url.Map, ref encoded, out invalid);
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> LoadUnsafe(ref char src)
-    {
-        ref short ptr = ref Unsafe.As<char, short>(ref src);
-        return Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
