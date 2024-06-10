@@ -27,14 +27,14 @@ public class Benchmark128
 
     #region EncodeToString
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_Convert()
         => Convert.ToBase64String(_guid.ToByteArray()).Replace("/", "_").Replace("+", "-").Replace("=", "");
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_Simple() => SimpleEncodeToString(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_gfoidl()
     {
         Span<byte> bytes = stackalloc byte[16];
@@ -63,7 +63,7 @@ public class Benchmark128
         UnsafeBase64.Encode128(Base64Url.Chars, ref Unsafe.As<Guid, byte>(ref value), ref MemoryMarshal.GetReference(chars));
     });
 
-    //[Benchmark]
+    [Benchmark]
     public string EncodeToString_IT_Ref()
     {
         var newStr = new string('\0', 22);
@@ -91,10 +91,10 @@ public class Benchmark128
 
     #region EncodeToBytes
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_gfoidl()
     {
         Span<byte> guidBytes = stackalloc byte[16];
@@ -106,7 +106,7 @@ public class Benchmark128
         return encodedBytes;
     }
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT_Vector()
     {
         var encodedBytes = new byte[22];
@@ -114,7 +114,7 @@ public class Benchmark128
         return encodedBytes;
     }
 
-    //[Benchmark]
+    [Benchmark]
     public byte[] EncodeToBytes_IT()
     {
         var encodedBytes = new byte[22];
@@ -134,11 +134,11 @@ public class Benchmark128
 
     #region DecodeFromString
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_Convert()
         => Unsafe.As<byte, Guid>(ref Convert.FromBase64String(_encodedString.Replace("_", "/").Replace("-", "+") + "==")[0]);
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_gfoidl()
     {
         Span<byte> buffer = stackalloc byte[16];
@@ -146,7 +146,7 @@ public class Benchmark128
         return Unsafe.As<byte, Guid>(ref MemoryMarshal.GetReference(buffer));
     }
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT_Vector()
     {
         Guid guid = default;
@@ -155,7 +155,7 @@ public class Benchmark128
         return guid;
     }
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromString_IT()
     {
         Guid guid = default;
@@ -168,7 +168,7 @@ public class Benchmark128
 
     #region DecodeFromBytes
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_gfoidl()
     {
         Span<byte> buffer = stackalloc byte[16];
@@ -176,7 +176,7 @@ public class Benchmark128
         return Unsafe.As<byte, Guid>(ref MemoryMarshal.GetReference(buffer));
     }
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT_Vector()
     {
         Guid guid = default;
@@ -184,7 +184,7 @@ public class Benchmark128
         return guid;
     }
 
-    //[Benchmark]
+    [Benchmark]
     public Guid DecodeFromBytes_IT()
     {
         Guid guid = default;
