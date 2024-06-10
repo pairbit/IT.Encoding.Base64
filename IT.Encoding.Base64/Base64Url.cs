@@ -908,6 +908,273 @@ public static class Base64Url
 
     #endregion Valid32
 
+    #region Encode24
+
+    public static EncodingStatus TryEncode24(ReadOnlySpan<byte> bytes, Span<byte> encoded)
+    {
+        if (bytes.Length != 3) return EncodingStatus.InvalidDataLength;
+        if (encoded.Length < 4) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode24(Bytes, ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryEncode24(ReadOnlySpan<byte> bytes, Span<char> encoded)
+    {
+        if (bytes.Length != 3) return EncodingStatus.InvalidDataLength;
+        if (encoded.Length < 4) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode24(Chars, ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryEncode24<T>(T value, Span<byte> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) return EncodingStatus.InvalidDataLength;
+        if (encoded.Length < 4) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode24(Bytes, ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryEncode24<T>(T value, Span<char> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) return EncodingStatus.InvalidDataLength;
+        if (encoded.Length < 4) return EncodingStatus.InvalidDestinationLength;
+
+        UnsafeBase64.Encode24(Chars, ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+
+        return EncodingStatus.Done;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode24(ReadOnlySpan<byte> bytes, Span<byte> encoded)
+    {
+        if (bytes.Length != 3) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 3");
+        if (encoded.Length < 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 4");
+
+        UnsafeBase64.Encode24(Bytes, ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode24(ReadOnlySpan<byte> bytes, Span<char> encoded)
+    {
+        if (bytes.Length != 3) throw new ArgumentOutOfRangeException(nameof(bytes), bytes.Length, "length != 3");
+        if (encoded.Length < 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 4");
+
+        UnsafeBase64.Encode24(Chars, ref MemoryMarshal.GetReference(bytes), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode24<T>(T value, Span<byte> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+        if (encoded.Length < 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 4");
+
+        UnsafeBase64.Encode24(Bytes, ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Encode24<T>(T value, Span<char> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+        if (encoded.Length < 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length < 4");
+
+        UnsafeBase64.Encode24(Chars, ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(encoded));
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static byte[] Encode24ToBytes<T>(T value) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+
+        var encoded = new byte[4];
+
+        UnsafeBase64.Encode24(Bytes, ref Unsafe.As<T, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static char[] Encode24ToChars<T>(T value) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+
+        var encoded = new char[4];
+
+        UnsafeBase64.Encode24(Chars, ref Unsafe.As<T, byte>(ref value), ref encoded[0]);
+
+        return encoded;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static string Encode24ToString<T>(T value) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+
+        return string.Create(4, value, static (chars, value) =>
+        {
+            UnsafeBase64.Encode24(Chars, ref Unsafe.As<T, byte>(ref value), ref MemoryMarshal.GetReference(chars));
+        });
+    }
+
+    #endregion Encode24
+
+    #region Decode24
+
+    public static EncodingStatus TryDecode24<T>(ReadOnlySpan<byte> encoded, out T value) where T : unmanaged
+    {
+        value = default;
+        if (encoded.Length != 4) return EncodingStatus.InvalidDataLength;
+        if (Unsafe.SizeOf<T>() != 3) return EncodingStatus.InvalidDestinationLength;
+
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value)))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode24<T>(ReadOnlySpan<char> encoded, out T value) where T : unmanaged
+    {
+        value = default;
+        if (encoded.Length != 4) return EncodingStatus.InvalidDataLength;
+        if (Unsafe.SizeOf<T>() != 3) return EncodingStatus.InvalidDestinationLength;
+
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value)))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode24<T>(ReadOnlySpan<byte> encoded, out T value, out byte invalid) where T : unmanaged
+    {
+        value = default;
+        if (encoded.Length != 4)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        if (Unsafe.SizeOf<T>() != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDestinationLength;
+        }
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), out invalid))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    public static EncodingStatus TryDecode24<T>(ReadOnlySpan<char> encoded, out T value, out char invalid) where T : unmanaged
+    {
+        value = default;
+        if (encoded.Length != 4)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        if (Unsafe.SizeOf<T>() != 3)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDestinationLength;
+        }
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), out invalid))
+        {
+            value = default;
+            return EncodingStatus.InvalidData;
+        }
+        return EncodingStatus.Done;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static T Decode24<T>(ReadOnlySpan<byte> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+        if (encoded.Length != 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 4");
+
+        T value = default;
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid byte");
+
+        return value;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static T Decode24<T>(ReadOnlySpan<char> encoded) where T : unmanaged
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+        if (encoded.Length != 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 4");
+
+        T value = default;
+        if (!UnsafeBase64.TryDecode24(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<T, byte>(ref value), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid char");
+
+        return value;
+    }
+
+    #endregion Decode24
+
+    #region Valid24
+
+    public static EncodingStatus TryValid24(ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length != 4) return EncodingStatus.InvalidDataLength;
+        return UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid24(ReadOnlySpan<char> encoded)
+    {
+        if (encoded.Length != 4) return EncodingStatus.InvalidDataLength;
+        return UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid24(ReadOnlySpan<byte> encoded, out byte invalid)
+    {
+        if (encoded.Length != 4)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        return UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    public static EncodingStatus TryValid24(ReadOnlySpan<char> encoded, out char invalid)
+    {
+        if (encoded.Length != 4)
+        {
+            invalid = default;
+            return EncodingStatus.InvalidDataLength;
+        }
+        return UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Valid24(ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length != 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 4");
+        if (!UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid byte");
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
+    public static void Valid24(ReadOnlySpan<char> encoded)
+    {
+        if (encoded.Length != 4) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 4");
+        if (!UnsafeBase64.IsValid24(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+            throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "Invalid char");
+    }
+
+    #endregion Valid24
+
     #region Encode16
 
     public static EncodingStatus TryEncode16(ushort value, Span<byte> encoded)
