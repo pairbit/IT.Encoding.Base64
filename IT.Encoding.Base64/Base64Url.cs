@@ -1461,12 +1461,7 @@ public static class Base64Url
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ushort Encode8ToUInt16(byte value)
-    {
-        var map = Bytes;
-        int i = value << 8;
-        return (ushort)(map[i >> 10] | map[i >> 4 & 0x3F] << 8);
-    }
+    public static short Encode8ToInt16(byte value) => UnsafeBase64.Encode8ToInt16(Bytes, ref value);
 
     public static byte[] Encode8ToBytes(byte value)
     {

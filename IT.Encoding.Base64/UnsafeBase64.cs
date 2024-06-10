@@ -824,6 +824,13 @@ public static class UnsafeBase64
     #region Encode8
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static short Encode8ToInt16(byte[] map, ref byte src)
+    {
+        int i = src << 8;
+        return (short)(map[i >> 10] | map[i >> 4 & 0x3F] << 8);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Encode8(byte[] map, ref byte src, ref byte encoded)
     {
         int i = src << 8;
