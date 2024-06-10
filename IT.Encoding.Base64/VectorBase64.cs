@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -9,7 +10,7 @@ public static class VectorBase64
 {
     public static string ToString176(ref byte encoded)
     {
-        if (Vector128.IsHardwareAccelerated)
+        if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && Sse2.IsSupported)
         {
             var str = new string('\0', 22);
             ref char ch = ref Unsafe.AsRef(in str.GetPinnableReference());
@@ -33,7 +34,7 @@ public static class VectorBase64
 
     public static string ToString<T>(T encoded) where T : unmanaged
     {
-        if (Vector128.IsHardwareAccelerated && Unsafe.SizeOf<T>() > 16)
+        if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && Sse2.IsSupported && Unsafe.SizeOf<T>() > 16)
         {
             return string.Create(Unsafe.SizeOf<T>(), encoded, static (chars, encoded) =>
             {

@@ -64,17 +64,17 @@ public class Benchmark128
     //[Benchmark]
     public byte[] EncodeToBytes_Simple() => SimpleEncodeToBytes(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public byte[] EncodeToBytes_gfoidl() => gfoidlEncodeToBytes(_guid);
 
-    [Benchmark]
+    //[Benchmark]
     public byte[] EncodeToBytes_IT_Vector() => VectorEncodeToBytes(_guid);
+
+    //[Benchmark]
+    public byte[] EncodeToBytes_IT() => NoVectorEncodeToBytes(_guid);
 
     [Benchmark]
     public Struct176 EncodeToStruct_IT_Vector() => VectorEncodeToStruct(_guid);
-
-    [Benchmark]
-    public byte[] EncodeToBytes_IT() => NoVectorEncodeToBytes(_guid);
 
     #endregion EncodeToBytes
 
