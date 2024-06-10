@@ -987,6 +987,18 @@ public static class Base64Url
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Encode24ToInt32<T>(T value)
+    {
+        if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
+
+        var map = Bytes;
+        ref byte src = ref Unsafe.As<T, byte>(ref value);
+        int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
+        return map[i >> 18] | map[i >> 12 & 0x3F] << 8 | map[i >> 6 & 0x3F] << 16 | map[i & 0x3F] << 24;
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException"/>
     public static byte[] Encode24ToBytes<T>(T value) where T : unmanaged
     {
         if (Unsafe.SizeOf<T>() != 3) throw new ArgumentOutOfRangeException(nameof(T), Unsafe.SizeOf<T>(), $"SizeOf<{typeof(T).FullName}> != 3");
