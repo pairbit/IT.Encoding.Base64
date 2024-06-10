@@ -24,9 +24,12 @@ public class Base64UrlTest
         Assert.That(Base64Url.Encode8ToString(251), Is.EqualTo("-w"));
         Assert.That(Base64Url.Decode8("-w"), Is.EqualTo(251));
         Assert.That(Base64Url.Decode8("-_"), Is.EqualTo(251));
-        //Assert.That(Base64Url.Decode8("-/"), Is.EqualTo(251));
-        //Assert.That(Base64Url.Decode8("+_"), Is.EqualTo(251));
-        //Assert.That(Base64Url.Decode8("+/"), Is.EqualTo(251));
+
+        Assert.That(Base64Url.TryValid8("-/", out var invalid), Is.EqualTo(EncodingStatus.InvalidData));
+        Assert.That(invalid, Is.EqualTo('/'));
+        Assert.That(Base64Url.TryValid8("+_", out invalid), Is.EqualTo(EncodingStatus.InvalidData));
+        Assert.That(invalid, Is.EqualTo('+'));
+        Assert.That(Base64Url.TryValid8("+/"), Is.EqualTo(EncodingStatus.InvalidData));
 
         for (var i = 0; i <= byte.MaxValue; i++)
         {
