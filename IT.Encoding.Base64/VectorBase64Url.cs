@@ -159,22 +159,8 @@ public static class VectorBase64Url
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
-
-                // Take care as arguments are flipped in order!
-                //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                if (Vector128.AndNot(
-                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
-                        1, 1, 0x2d, 0x30,
-                        0x41, 0x50, 0x61, 0x70,
-                        1, 1, 1, 1,
-                        1, 1, 1, 1
-                    ), hiNibbles)) |
-                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
-                       0x00, 0x00, 0x2d, 0x39,
-                       0x4f, 0x5a, 0x6f, 0x7a,
-                       0x00, 0x00, 0x00, 0x00,
-                       0x00, 0x00, 0x00, 0x00
-                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
+                if (!IsValid128(vector, hiNibbles, eq5F))
+                    return false;
 
                 vector = Decode128(vector, hiNibbles, eq5F);
             }
@@ -206,22 +192,8 @@ public static class VectorBase64Url
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
-
-                // Take care as arguments are flipped in order!
-                //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                if (Vector128.AndNot(
-                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
-                        1, 1, 0x2d, 0x30,
-                        0x41, 0x50, 0x61, 0x70,
-                        1, 1, 1, 1,
-                        1, 1, 1, 1
-                    ), hiNibbles)) |
-                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
-                       0x00, 0x00, 0x2d, 0x39,
-                       0x4f, 0x5a, 0x6f, 0x7a,
-                       0x00, 0x00, 0x00, 0x00,
-                       0x00, 0x00, 0x00, 0x00
-                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
+                if (!IsValid128(vector, hiNibbles, eq5F))
+                    return false;
 
                 vector = Decode128(vector, hiNibbles, eq5F);
             }
@@ -253,22 +225,7 @@ public static class VectorBase64Url
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
-
-                // Take care as arguments are flipped in order!
-                //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                if (Vector128.AndNot(
-                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
-                        1, 1, 0x2d, 0x30,
-                        0x41, 0x50, 0x61, 0x70,
-                        1, 1, 1, 1,
-                        1, 1, 1, 1
-                    ), hiNibbles)) |
-                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
-                       0x00, 0x00, 0x2d, 0x39,
-                       0x4f, 0x5a, 0x6f, 0x7a,
-                       0x00, 0x00, 0x00, 0x00,
-                       0x00, 0x00, 0x00, 0x00
-                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
+                if (!IsValid128(vector, hiNibbles, eq5F))
                 {
                     invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 16);
                     return false;
@@ -304,27 +261,11 @@ public static class VectorBase64Url
                 Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
                 Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
-
-                // Take care as arguments are flipped in order!
-                //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
-                if (Vector128.AndNot(
-                    Vector128.LessThan(vector, Ssse3.Shuffle(Vector128.Create(
-                        1, 1, 0x2d, 0x30,
-                        0x41, 0x50, 0x61, 0x70,
-                        1, 1, 1, 1,
-                        1, 1, 1, 1
-                    ), hiNibbles)) |
-                    Vector128.GreaterThan(vector, Ssse3.Shuffle(Vector128.Create(
-                       0x00, 0x00, 0x2d, 0x39,
-                       0x4f, 0x5a, 0x6f, 0x7a,
-                       0x00, 0x00, 0x00, 0x00,
-                       0x00, 0x00, 0x00, 0x00
-                    ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
+                if (!IsValid128(vector, hiNibbles, eq5F))
                 {
                     invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 32);
                     return false;
                 }
-
                 vector = Decode128(vector, hiNibbles, eq5F);
             }
             else
@@ -445,7 +386,12 @@ public static class VectorBase64Url
         Vector128<sbyte> maskSlashOrUnderscore = Vector128.Create((sbyte)0x5F);//_
         Vector128<sbyte> hiNibbles = Vector128.ShiftRightLogical(vector.AsInt32(), 4).AsSByte() & maskSlashOrUnderscore;
         Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
+        return IsValid128(vector, hiNibbles, eq5F);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsValid128(Vector128<sbyte> vector, Vector128<sbyte> hiNibbles, Vector128<sbyte> eq5F)
+    {
         // Take care as arguments are flipped in order!
         //Vector128<sbyte> outside = Sse2.AndNot(eq5F, below | above);
         return Vector128.AndNot(
