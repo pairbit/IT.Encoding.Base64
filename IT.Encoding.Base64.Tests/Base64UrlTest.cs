@@ -131,14 +131,14 @@ public class Base64UrlTest
     public void Test128()
     {
         Span<byte> buffer = stackalloc byte[16];
-        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), UInt128.MaxValue);
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), Int128.MaxValue);
 
-        Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo("/////////////////////w"));
+        Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo("////////////////////fw"));
 
-        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), UInt128.MinValue);
-        Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo("AAAAAAAAAAAAAAAAAAAAAA"));
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), Int128.MinValue);
+        Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo("AAAAAAAAAAAAAAAAAAAAgA"));
 
-        var value = new UInt128(10468201550123809991, 12468201550123809992);
+        var value = new Int128(10468201550123809991, 12468201550123809992);
         var str = Base64Url.Encode128ToString(value);
         Assert.That(str, Is.EqualTo("yLwaH0DzB63HvFLQ2IVGkQ"));
         Assert.That(Base64Url.Decode128(str), Is.EqualTo(value));
@@ -146,13 +146,13 @@ public class Base64UrlTest
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
         Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo(str));
 
-        value = new UInt128(5646395698327322037, 5097069996605788250);
+        value = new Int128(5646395698327322037, 5097069996605788250);
         Assert.That(Base64Url.Decode128("WlD9DihuvEa1_RfE-AZcTg"), Is.EqualTo(value));
         
         var random = Random.Shared;
         for (var i = 0; i < 100; i++)
         {
-            Test128(new UInt128((ulong)random.NextInt64(), (ulong)random.NextInt64()));
+            Test128(new Int128((ulong)random.NextInt64(), (ulong)random.NextInt64()));
         }
     }
 
@@ -1132,13 +1132,13 @@ public class Base64UrlTest
         }
     }
 
-    private static string Test128(UInt128 value)
+    private static string Test128(Int128 value)
     {
         var str = Base64Url.Encode128ToString(value);
         Assert.That(str, Is.EqualTo(new string(Base64Url.Encode128ToChars(value))));
 
         const int len = 22;
-        UInt128 defaultValue = default;
+        Int128 defaultValue = default;
         Span<byte> bytes = stackalloc byte[len];
         Assert.That(Base64Url.TryEncode128(value, bytes), Is.EqualTo(EncodingStatus.Done));
         Assert.That(str, Is.EqualTo(Encoding.ASCII.GetString(bytes)));
@@ -1221,8 +1221,8 @@ public class Base64UrlTest
     {
         Assert.That(bytes.Length, Is.EqualTo(chars.Length));
 
-        UInt128 value = default;
-        UInt128 defaultValue = default;
+        Int128 value = default;
+        Int128 defaultValue = default;
         var m = _decodeMap;
         var offset = bytes.Length - 1;
         Span<byte> invalidBytes = stackalloc byte[bytes.Length];
