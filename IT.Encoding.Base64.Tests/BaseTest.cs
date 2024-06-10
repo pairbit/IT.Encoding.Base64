@@ -9,6 +9,7 @@ public class BaseTest
     [Test]
     public void SizeOfTest()
     {
+        Assert.That(Unsafe.SizeOf<Struct24>, Is.EqualTo(3));
         Assert.That(Unsafe.SizeOf<Struct72>, Is.EqualTo(9));
         Assert.That(Unsafe.SizeOf<Struct176>, Is.EqualTo(22));
     }
