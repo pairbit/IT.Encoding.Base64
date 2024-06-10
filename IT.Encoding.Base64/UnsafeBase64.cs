@@ -1016,4 +1016,24 @@ public static class UnsafeBase64
         Unsafe.AddByteOffset(ref ch, 40) = (char)Unsafe.AddByteOffset(ref by, 20);
         Unsafe.AddByteOffset(ref ch, 42) = (char)Unsafe.AddByteOffset(ref by, 21);
     }
+
+    public static byte GetInvalid(sbyte[] map, ref byte encoded, int len)
+    {
+        for (int i = 0; i < len; i++)
+        {
+            var invalid = Unsafe.AddByteOffset(ref encoded, i);
+            if (map[invalid] < 0) return invalid;
+        }
+        throw new InvalidOperationException("invalid byte not found");
+    }
+
+    public static char GetInvalid(sbyte[] map, ref char encoded, int len)
+    {
+        for (int i = 0; i < len; i += 2)
+        {
+            var invalid = Unsafe.AddByteOffset(ref encoded, i);
+            if (invalid > 255 || map[invalid] < 0) return invalid;
+        }
+        throw new InvalidOperationException("invalid char not found");
+    }
 }

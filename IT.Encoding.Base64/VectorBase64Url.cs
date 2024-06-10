@@ -303,13 +303,8 @@ public static class VectorBase64Url
                        0x00, 0x00, 0x00, 0x00
                     ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
                 {
-                    var map = Base64Url.Map;
-                    for (int i = 0; i < 16; i++)
-                    {
-                        invalid = Unsafe.AddByteOffset(ref encoded, i);
-                        if (map[invalid] < 0) return false;
-                    }
-                    throw new InvalidOperationException("invalid not found");
+                    invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 16);
+                    return false;
                 }
 
                 vector = Ssse3.Shuffle(
@@ -376,13 +371,8 @@ public static class VectorBase64Url
                        0x00, 0x00, 0x00, 0x00
                     ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero)
                 {
-                    var map = Base64Url.Map;
-                    for (int i = 0; i < 32; i += 2)
-                    {
-                        invalid = Unsafe.AddByteOffset(ref encoded, i);
-                        if (invalid > 255 || map[invalid] < 0) return false;
-                    }
-                    throw new InvalidOperationException("invalid not found");
+                    invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 32);
+                    return false;
                 }
 
                 vector = Ssse3.Shuffle(
@@ -469,13 +459,8 @@ public static class VectorBase64Url
             {
                 if (!IsValid128(Vector128.LoadUnsafe(ref encoded).AsSByte()))
                 {
-                    var map = Base64Url.Map;
-                    for (int i = 0; i < 16; i++)
-                    {
-                        invalid = Unsafe.AddByteOffset(ref encoded, i);
-                        if (map[invalid] < 0) return false;
-                    }
-                    throw new InvalidOperationException("invalid not found");
+                    invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 16);
+                    return false;
                 }
             }
             else
@@ -499,13 +484,8 @@ public static class VectorBase64Url
                 ref short ptr = ref Unsafe.As<char, short>(ref encoded);
                 if (!IsValid128(Sse2.PackUnsignedSaturate(Vector128.LoadUnsafe(ref ptr), Vector128.LoadUnsafe(ref ptr, 8)).AsSByte()))
                 {
-                    var map = Base64Url.Map;
-                    for (int i = 0; i < 32; i += 2)
-                    {
-                        invalid = Unsafe.AddByteOffset(ref encoded, i);
-                        if (invalid > 255 || map[invalid] < 0) return false;
-                    }
-                    throw new InvalidOperationException("invalid not found");
+                    invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 32);
+                    return false;
                 }
             }
             else
