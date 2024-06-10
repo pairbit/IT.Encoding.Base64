@@ -103,7 +103,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out invalid))
+        if (!VectorBase64Url.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -119,7 +119,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        if (!UnsafeBase64.TryDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out invalid))
+        if (!VectorBase64Url.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out invalid))
         {
             value = default;
             return EncodingStatus.InvalidData;
@@ -133,7 +133,7 @@ public static class Base64Url
         if (encoded.Length != 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 22");
 
         UInt128 value = 0;
-        if (!UnsafeBase64.TryDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out var invalid))
+        if (!VectorBase64Url.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
 
         return value;
@@ -145,7 +145,7 @@ public static class Base64Url
         if (encoded.Length != 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 22");
 
         UInt128 value = 0;
-        if (!UnsafeBase64.TryDecode128(Map, ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out var invalid))
+        if (!VectorBase64Url.TryDecode128(ref MemoryMarshal.GetReference(encoded), ref Unsafe.As<UInt128, byte>(ref value), out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
 
         return value;
