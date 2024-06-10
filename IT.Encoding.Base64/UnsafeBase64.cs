@@ -509,6 +509,13 @@ public static class UnsafeBase64
     #region Encode24
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Encode24ToInt32(byte[] map, ref byte src)
+    {
+        int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
+        return map[i >> 18] | map[i >> 12 & 0x3F] << 8 | map[i >> 6 & 0x3F] << 16 | map[i & 0x3F] << 24;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Encode24(byte[] map, ref byte src, ref byte encoded)
     {
         int i = src << 16 | Unsafe.AddByteOffset(ref src, 1) << 8 | Unsafe.AddByteOffset(ref src, 2);
