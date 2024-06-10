@@ -176,23 +176,7 @@ public static class VectorBase64Url
                        0x00, 0x00, 0x00, 0x00
                     ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
 
-                vector = Ssse3.Shuffle(
-                    Sse2.MultiplyAddAdjacent(
-                        Ssse3.MultiplyAddAdjacent(
-                            (vector + Ssse3.Shuffle(Vector128.Create(
-                                0, 0, 17, 4,
-                              -65, -65, -71, -71,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0
-                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
-                            Vector128.Create(0x01400140).AsSByte()),
-                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
-                    Vector128.Create(
-                        2, 1, 0, 6,
-                        5, 4, 10, 9,
-                        8, 14, 13, 12,
-                       -1, -1, -1, -1
-                    ));
+                vector = Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -239,23 +223,7 @@ public static class VectorBase64Url
                        0x00, 0x00, 0x00, 0x00
                     ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
 
-                vector = Ssse3.Shuffle(
-                    Sse2.MultiplyAddAdjacent(
-                        Ssse3.MultiplyAddAdjacent(
-                            (vector + Ssse3.Shuffle(Vector128.Create(
-                                0, 0, 17, 4,
-                              -65, -65, -71, -71,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0
-                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
-                            Vector128.Create(0x01400140).AsSByte()),
-                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
-                    Vector128.Create(
-                        2, 1, 0, 6,
-                        5, 4, 10, 9,
-                        8, 14, 13, 12,
-                       -1, -1, -1, -1
-                    ));
+                vector = Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -306,23 +274,7 @@ public static class VectorBase64Url
                     return false;
                 }
 
-                vector = Ssse3.Shuffle(
-                    Sse2.MultiplyAddAdjacent(
-                        Ssse3.MultiplyAddAdjacent(
-                            (vector + Ssse3.Shuffle(Vector128.Create(
-                                0, 0, 17, 4,
-                              -65, -65, -71, -71,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0
-                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
-                            Vector128.Create(0x01400140).AsSByte()),
-                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
-                    Vector128.Create(
-                        2, 1, 0, 6,
-                        5, 4, 10, 9,
-                        8, 14, 13, 12,
-                       -1, -1, -1, -1
-                    ));
+                vector = Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -373,23 +325,7 @@ public static class VectorBase64Url
                     return false;
                 }
 
-                vector = Ssse3.Shuffle(
-                    Sse2.MultiplyAddAdjacent(
-                        Ssse3.MultiplyAddAdjacent(
-                            (vector + Ssse3.Shuffle(Vector128.Create(
-                                0, 0, 17, 4,
-                              -65, -65, -71, -71,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0
-                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
-                            Vector128.Create(0x01400140).AsSByte()),
-                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
-                    Vector128.Create(
-                        2, 1, 0, 6,
-                        5, 4, 10, 9,
-                        8, 14, 13, 12,
-                       -1, -1, -1, -1
-                    ));
+                vector = Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -526,4 +462,24 @@ public static class VectorBase64Url
                0x00, 0x00, 0x00, 0x00
             ), hiNibbles)), eq5F) == Vector128<sbyte>.Zero;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<sbyte> Decode128(Vector128<sbyte> vector, Vector128<sbyte> hiNibbles, Vector128<sbyte> eq5F)
+        => Ssse3.Shuffle(
+            Sse2.MultiplyAddAdjacent(
+                Ssse3.MultiplyAddAdjacent(
+                    (vector + Ssse3.Shuffle(Vector128.Create(
+                        0, 0, 17, 4,
+                        -65, -65, -71, -71,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0
+                    ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
+                    Vector128.Create(0x01400140).AsSByte()),
+                Vector128.Create(0x00011000).AsInt16()).AsSByte(),
+            Vector128.Create(
+                2, 1, 0, 6,
+                5, 4, 10, 9,
+                8, 14, 13, 12,
+                -1, -1, -1, -1
+            ));
 }
