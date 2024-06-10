@@ -158,13 +158,13 @@ public static class Base64Url
     public static EncodingStatus TryValid128(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
-        return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+        return VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
     public static EncodingStatus TryValid128(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 22) return EncodingStatus.InvalidDataLength;
-        return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+        return VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded)) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
     public static EncodingStatus TryValid128(ReadOnlySpan<byte> encoded, out byte invalid)
@@ -174,7 +174,7 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+        return VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
     public static EncodingStatus TryValid128(ReadOnlySpan<char> encoded, out char invalid)
@@ -184,14 +184,14 @@ public static class Base64Url
             invalid = default;
             return EncodingStatus.InvalidDataLength;
         }
-        return UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
+        return VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded), out invalid) ? EncodingStatus.Done : EncodingStatus.InvalidData;
     }
 
     /// <exception cref="ArgumentOutOfRangeException"/>
     public static void Valid128(ReadOnlySpan<byte> encoded)
     {
         if (encoded.Length != 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 22");
-        if (!UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+        if (!VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded), out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid byte");
     }
 
@@ -199,7 +199,7 @@ public static class Base64Url
     public static void Valid128(ReadOnlySpan<char> encoded)
     {
         if (encoded.Length != 22) throw new ArgumentOutOfRangeException(nameof(encoded), encoded.Length, "length != 22");
-        if (!UnsafeBase64.IsValid128(Map, ref MemoryMarshal.GetReference(encoded), out var invalid))
+        if (!VectorBase64Url.IsValid128(ref MemoryMarshal.GetReference(encoded), out var invalid))
             throw new ArgumentOutOfRangeException(nameof(encoded), invalid, "invalid char");
     }
 
