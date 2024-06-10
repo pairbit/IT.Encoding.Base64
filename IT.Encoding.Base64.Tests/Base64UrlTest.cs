@@ -21,6 +21,13 @@ public class Base64UrlTest
         Assert.That(Test8(236), Is.EqualTo("7A"));
         Assert.That(Test8(44), Is.EqualTo("LA"));
 
+        Assert.That(Base64Url.Encode8ToString(251), Is.EqualTo("-w"));
+        Assert.That(Base64Url.Decode8("-_"), Is.EqualTo(251));
+        Assert.That(Base64Url.Decode8("+/"), Is.EqualTo(251));
+        Assert.That(Base64Url.Decode8("+_"), Is.EqualTo(251));
+        Assert.That(Base64Url.Decode8("-/"), Is.EqualTo(251));
+        Assert.That(Base64Url.Decode8("-w"), Is.EqualTo(251));
+
         for (var i = 0; i <= byte.MaxValue; i++)
         {
             Test8((byte)i);
@@ -139,6 +146,9 @@ public class Base64UrlTest
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
         Assert.That(Convert.ToBase64String(buffer).TrimEnd('='), Is.EqualTo(str));
 
+        value = new UInt128(5646395698327322037, 5097069996605788250);
+        Assert.That(Base64Url.Decode128("WlD9DihuvEa1_RfE-AZcTg"), Is.EqualTo(value));
+        
         var random = Random.Shared;
         for (var i = 0; i < 100; i++)
         {
