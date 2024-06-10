@@ -3,8 +3,6 @@ using BenchmarkDotNet.Order;
 using IT.Encoding.Base64.Tests;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.X86;
 
 namespace IT.Encoding.Base64.Benchmarks;
 
