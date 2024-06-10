@@ -494,24 +494,6 @@ public static class VectorBase64Url
                        0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00
                     ), hiNibbles)), eq5F) != Vector128<sbyte>.Zero) return false;
-
-                vector = Ssse3.Shuffle(
-                    Sse2.MultiplyAddAdjacent(
-                        Ssse3.MultiplyAddAdjacent(
-                            (vector + Ssse3.Shuffle(Vector128.Create(
-                                0, 0, 17, 4,
-                              -65, -65, -71, -71,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0
-                            ), hiNibbles) + (eq5F & Vector128.Create((sbyte)33))).AsByte(),
-                            Vector128.Create(0x01400140).AsSByte()),
-                        Vector128.Create(0x00011000).AsInt16()).AsSByte(),
-                    Vector128.Create(
-                        2, 1, 0, 6,
-                        5, 4, 10, 9,
-                        8, 14, 13, 12,
-                       -1, -1, -1, -1
-                    ));
             }
             else
             {
@@ -586,18 +568,6 @@ public static class VectorBase64Url
                 Vector128<sbyte> outside = Vector128.AndNot(below | above, eq5F);
 
                 if (outside != Vector128<sbyte>.Zero) return false;
-
-                Vector128<sbyte> shift = Ssse3.Shuffle(lutShift, hiNibbles);
-                vector += shift;
-
-                vector += (eq5F & shiftForSlashOrUnderscore);
-
-                //////////////////////////////////////////
-
-                Vector128<short> merge_ab_and_bc = Ssse3.MultiplyAddAdjacent(vector.AsByte(), mergeConstant0);
-                Vector128<int> output = Sse2.MultiplyAddAdjacent(merge_ab_and_bc, mergeConstant1);
-
-                vector = Ssse3.Shuffle(output.AsSByte(), shuffleVec);
             }
             else
             {
