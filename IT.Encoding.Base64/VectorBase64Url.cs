@@ -378,7 +378,7 @@ public static class VectorBase64Url
                0x4f, 0x5a, 0x6f, 0x7a,
                0x00, 0x00, 0x00, 0x00,
                0x00, 0x00, 0x00, 0x00
-            ), hiNibbles)), eq5F) == Vector128<sbyte>.Zero;
+            ), hiNibbles)), eq5F) == default;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -17,15 +17,15 @@ internal static class xSse2
     internal static void StoreUnsafe(Vector128<byte> vector, ref char destination)
     {
         ref short ptr = ref Unsafe.As<char, short>(ref destination);
-        Sse2.UnpackLow(vector, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref ptr);
-        Sse2.UnpackHigh(vector, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref ptr, 8);
+        Sse2.UnpackLow(vector, default).AsInt16().StoreUnsafe(ref ptr);
+        Sse2.UnpackHigh(vector, default).AsInt16().StoreUnsafe(ref ptr, 8);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void StoreUnsafe(Vector128<sbyte> vector, ref char destination)
     {
         ref short ptr = ref Unsafe.As<char, short>(ref destination);
-        Sse2.UnpackLow(vector, Vector128<sbyte>.Zero).AsInt16().StoreUnsafe(ref ptr);
-        Sse2.UnpackHigh(vector, Vector128<sbyte>.Zero).AsInt16().StoreUnsafe(ref ptr, 8);
+        Sse2.UnpackLow(vector, default).AsInt16().StoreUnsafe(ref ptr);
+        Sse2.UnpackHigh(vector, default).AsInt16().StoreUnsafe(ref ptr, 8);
     }
 }
