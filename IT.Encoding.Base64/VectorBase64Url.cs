@@ -126,12 +126,7 @@ public static class VectorBase64Url
                         (AdvSimd.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
                          Vector128.GreaterThan(v, Vector128.Create((sbyte)25))).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
 
-                ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-
-                (Vector128<short> lower, Vector128<short> upper) = Vector128.Widen(v);
-
-                lower.StoreUnsafe(ref ptr);
-                upper.StoreUnsafe(ref ptr, 8);
+                xVector128.StoreUnsafe(v, ref encoded);
             }
 
             var map = Base64Url.Chars;
