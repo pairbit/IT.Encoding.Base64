@@ -99,9 +99,7 @@ public static class VectorBase64Url
                         Sse2.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
                         Vector128.GreaterThan(v, Vector128.Create((sbyte)25)));
 
-                ref short ptr = ref Unsafe.As<char, short>(ref encoded);
-                Sse2.UnpackLow(v, Vector128<sbyte>.Zero).AsInt16().StoreUnsafe(ref ptr);
-                Sse2.UnpackHigh(v, Vector128<sbyte>.Zero).AsInt16().StoreUnsafe(ref ptr, 8);
+                xSse2.StoreUnsafe(v, ref encoded);
             }
             else
             {

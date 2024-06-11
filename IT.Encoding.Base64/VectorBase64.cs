@@ -12,10 +12,7 @@ public static class VectorBase64
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && Sse2.IsSupported)
         {
-            ref short s = ref Unsafe.As<char, short>(ref ch);
-            var v = Vector128.LoadUnsafe(ref by);
-            Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
-            Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
+            xSse2.StoreUnsafe(Vector128.LoadUnsafe(ref by), ref ch);
             Unsafe.AddByteOffset(ref ch, 32) = (char)Unsafe.AddByteOffset(ref by, 16);
             Unsafe.AddByteOffset(ref ch, 34) = (char)Unsafe.AddByteOffset(ref by, 17);
             Unsafe.AddByteOffset(ref ch, 36) = (char)Unsafe.AddByteOffset(ref by, 18);
@@ -36,10 +33,7 @@ public static class VectorBase64
             return string.Create(Unsafe.SizeOf<T>(), encoded, static (chars, encoded) =>
             {
                 ref byte b = ref Unsafe.As<T, byte>(ref encoded);
-                ref short s = ref Unsafe.As<char, short>(ref MemoryMarshal.GetReference(chars));
-                var v = Vector128.LoadUnsafe(ref b);
-                Sse2.UnpackLow(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s);
-                Sse2.UnpackHigh(v, Vector128<byte>.Zero).AsInt16().StoreUnsafe(ref s, 8);
+                xSse2.StoreUnsafe(Vector128.LoadUnsafe(ref b), ref MemoryMarshal.GetReference(chars));
                 for (int i = 16; i < chars.Length; i++)
                 {
                     chars[i] = (char)Unsafe.AddByteOffset(ref b, i);
