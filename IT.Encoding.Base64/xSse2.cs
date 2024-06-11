@@ -27,5 +27,8 @@ internal static class xSse2
         ref short ptr = ref Unsafe.As<char, short>(ref destination);
         Sse2.UnpackLow(vector, default).AsInt16().StoreUnsafe(ref ptr);
         Sse2.UnpackHigh(vector, default).AsInt16().StoreUnsafe(ref ptr, 8);
+
+        //Unsafe.As<byte, Vector128<short>>(ref Unsafe.As<char, byte>(ref destination)) = Sse2.UnpackLow(vector, default).AsInt16();
+        //Unsafe.As<byte, Vector128<short>>(ref Unsafe.As<char, byte>(ref Unsafe.AddByteOffset(ref destination, 16))) = Sse2.UnpackHigh(vector, default).AsInt16();
     }
 }
