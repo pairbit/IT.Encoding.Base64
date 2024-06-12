@@ -13,27 +13,7 @@ public static class VectorBase64Url
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
-            Vector128<sbyte> vector;
-            if (Ssse3.IsSupported)
-            {
-                vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), GetShuffleVec());
-                vector = Sse2.MultiplyHigh(
-                       (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
-                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-                vector += Ssse3.Shuffle(GetLut128(),
-                        Sse2.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
-            }
-            else
-            {
-                vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), GetShuffleVec());
-                vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
-                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-                vector += xArm64.Shuffle(GetLut128().AsByte(),
-                        AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
-            }
-            vector.AsByte().StoreUnsafe(ref encoded);
+            (Ssse3.IsSupported ? Ssse3Encode128(ref src) : Arm64Encode128(ref src)).AsByte().StoreUnsafe(ref encoded);
             var map = Base64Url.Bytes;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16));
             UnsafeBase64.Encode8(map, ref Unsafe.AddByteOffset(ref src, 15), ref Unsafe.AddByteOffset(ref encoded, 20));
@@ -50,26 +30,11 @@ public static class VectorBase64Url
         {
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), GetShuffleVec());
-                vector = Sse2.MultiplyHigh(
-                       (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
-                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-                vector += Ssse3.Shuffle(GetLut128(),
-                        Sse2.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
-
-                xSse2.StoreUnsafe(vector, ref encoded);
+                xSse2.StoreUnsafe(Ssse3Encode128(ref src), ref encoded);
             }
             else
             {
-                Vector128<sbyte> vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), GetShuffleVec());
-                vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
-                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-                vector += xArm64.Shuffle(GetLut128().AsByte(),
-                        AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
-
-                xVector128.StoreUnsafe(vector, ref encoded);
+                xVector128.StoreUnsafe(Arm64Encode128(ref src), ref encoded);
             }
             var map = Base64Url.Chars;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32));
@@ -337,6 +302,29 @@ public static class VectorBase64Url
                 8, 14, 13, 12,
                 -1, -1, -1, -1
             ));
+
+    private static Vector128<sbyte> Ssse3Encode128(ref byte src)
+    {
+        Vector128<sbyte> vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), GetShuffleVec());
+        vector = Sse2.MultiplyHigh(
+               (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
+              ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
+        vector += Ssse3.Shuffle(GetLut128(),
+                Sse2.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
+        return vector;
+    }
+
+    private static Vector128<sbyte> Arm64Encode128(ref byte src)
+    {
+        Vector128<sbyte> vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), GetShuffleVec());
+        vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
+              ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
+        vector += xArm64.Shuffle(GetLut128().AsByte(),
+                AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
+        return vector;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<sbyte> GetLut128() => Vector128.Create(
