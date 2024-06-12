@@ -86,21 +86,14 @@ public static class VectorBase64Url
             }
             else
             {
-                Vector128<sbyte> v = AdvSimd.Arm64.VectorTableLookup(Vector128.LoadUnsafe(ref src).AsSByte().AsByte(), 
-                    shuffleVec.AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
+                Vector128<sbyte> vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), shuffleVec);
+                vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
+                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
+                vector += xArm64.Shuffle(lut.AsByte(),
+                        AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
 
-                var temp = (v & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16();
-
-                v = AdvSimd.Arm64.ZipLow(
-                        Vector128.ShiftRightLogical(AdvSimd.Arm64.UnzipEven(temp.AsUInt16(), temp.AsUInt16()), 10),
-                        Vector128.ShiftRightLogical(AdvSimd.Arm64.UnzipOdd(temp.AsUInt16(), temp.AsUInt16()), 6)).AsSByte() |
-                      ((v & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-
-                v += AdvSimd.Arm64.VectorTableLookup(lut.AsByte(),
-                        (AdvSimd.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                         Vector128.GreaterThan(v, Vector128.Create((sbyte)25))).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
-
-                xVector128.StoreUnsafe(v, ref encoded);
+                xVector128.StoreUnsafe(vector, ref encoded);
             }
             var map = Base64Url.Chars;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 32));
