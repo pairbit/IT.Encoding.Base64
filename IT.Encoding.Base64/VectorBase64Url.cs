@@ -59,7 +59,7 @@ public static class VectorBase64Url
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
                 if (!IsValid128(vector, hiNibbles, eq5F))
                     return false;
-                vector = Decode128(vector, hiNibbles, eq5F);
+                vector = Ssse3Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -87,7 +87,7 @@ public static class VectorBase64Url
                 Vector128<sbyte> eq5F = Vector128.Equals(vector, maskSlashOrUnderscore);
                 if (!IsValid128(vector, hiNibbles, eq5F))
                     return false;
-                vector = Decode128(vector, hiNibbles, eq5F);
+                vector = Ssse3Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -118,7 +118,7 @@ public static class VectorBase64Url
                     invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 16);
                     return false;
                 }
-                vector = Decode128(vector, hiNibbles, eq5F);
+                vector = Ssse3Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -149,7 +149,7 @@ public static class VectorBase64Url
                     invalid = UnsafeBase64.GetInvalid(Base64Url.Map, ref encoded, 32);
                     return false;
                 }
-                vector = Decode128(vector, hiNibbles, eq5F);
+                vector = Ssse3Decode128(vector, hiNibbles, eq5F);
             }
             else
             {
@@ -284,7 +284,7 @@ public static class VectorBase64Url
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<sbyte> Decode128(Vector128<sbyte> vector, Vector128<sbyte> hiNibbles, Vector128<sbyte> eq5F)
+    private static Vector128<sbyte> Ssse3Decode128(Vector128<sbyte> vector, Vector128<sbyte> hiNibbles, Vector128<sbyte> eq5F)
         => Ssse3.Shuffle(
             Sse2.MultiplyAddAdjacent(
                 Ssse3.MultiplyAddAdjacent(
@@ -303,6 +303,7 @@ public static class VectorBase64Url
                 -1, -1, -1, -1
             ));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<sbyte> Ssse3Encode128(ref byte src)
     {
         Vector128<sbyte> vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), GetShuffleVec());
@@ -315,10 +316,12 @@ public static class VectorBase64Url
         return vector;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<sbyte> Arm64Encode128(ref byte src)
     {
         Vector128<sbyte> vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), GetShuffleVec());
-        vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
+        vector = xArm64.MultiplyHigh(
+               (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
               ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
         vector += xArm64.Shuffle(GetLut128().AsByte(),
                 AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
