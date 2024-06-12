@@ -13,56 +13,44 @@ public static class VectorBase64Url
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
-            Vector128<sbyte> v;
+            Vector128<sbyte> vector;
+
+            Vector128<sbyte> lut = Vector128.Create(
+                65, 71, -4, -4,
+                -4, -4, -4, -4,
+                -4, -4, -4, -4,
+                -17, 32, 0, 0
+            );
+            Vector128<sbyte> shuffleVec = Vector128.Create(
+                 1, 0, 2, 1,
+                 4, 3, 5, 4,
+                 7, 6, 8, 7,
+                10, 9, 11, 10
+            );
 
             if (Ssse3.IsSupported)
             {
-                v = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), Vector128.Create(
-                     1, 0, 2, 1,
-                     4, 3, 5, 4,
-                     7, 6, 8, 7,
-                    10, 9, 11, 10
-                ));
-                v = Sse2.MultiplyHigh(
-                       (v & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
-                      ((v & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
+                vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), shuffleVec);
+                vector = Sse2.MultiplyHigh(
+                       (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
+                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
 
-                v += Ssse3.Shuffle(Vector128.Create(
-                           65, 71, -4, -4,
-                           -4, -4, -4, -4,
-                           -4, -4, -4, -4,
-                           -17, 32, 0, 0
-                        ),
-                        Sse2.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(v, Vector128.Create((sbyte)25)));
+                vector += Ssse3.Shuffle(lut,
+                        Sse2.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
             }
             else
             {
-                v = AdvSimd.Arm64.VectorTableLookup(Vector128.LoadUnsafe(ref src).AsSByte().AsByte(), Vector128.Create(
-                     1, 0, 2, 1,
-                     4, 3, 5, 4,
-                     7, 6, 8, 7,
-                    10, 9, 11, 10
-                ).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
+                vector = xArm64.Shuffle(Vector128.LoadUnsafe(ref src), shuffleVec);
+                vector = xArm64.MultiplyHigh((vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16()).AsSByte() |
+                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
 
-                var temp = (v & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16();
-
-                v = AdvSimd.Arm64.ZipLow(
-                        Vector128.ShiftRightLogical(AdvSimd.Arm64.UnzipEven(temp.AsUInt16(), temp.AsUInt16()), 10),
-                        Vector128.ShiftRightLogical(AdvSimd.Arm64.UnzipOdd(temp.AsUInt16(), temp.AsUInt16()), 6)).AsSByte() |
-                      ((v & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
-
-                v += AdvSimd.Arm64.VectorTableLookup(Vector128.Create(
-                           65, 71, -4, -4,
-                           -4, -4, -4, -4,
-                           -4, -4, -4, -4,
-                           -17, 32, 0, 0
-                        ).AsByte(),
-                        (AdvSimd.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                         Vector128.GreaterThan(v, Vector128.Create((sbyte)25))).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
+                vector += xArm64.Shuffle(lut.AsByte(),
+                        AdvSimd.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
             }
 
-            v.AsByte().StoreUnsafe(ref encoded);
+            vector.AsByte().StoreUnsafe(ref encoded);
 
             var map = Base64Url.Bytes;
             UnsafeBase64.Encode24(map, ref Unsafe.AddByteOffset(ref src, 12), ref Unsafe.AddByteOffset(ref encoded, 16));
@@ -78,37 +66,35 @@ public static class VectorBase64Url
     {
         if (BitConverter.IsLittleEndian && Vector128.IsHardwareAccelerated && (Ssse3.IsSupported || AdvSimd.Arm64.IsSupported))
         {
+            Vector128<sbyte> lut = Vector128.Create(
+                65, 71, -4, -4,
+                -4, -4, -4, -4,
+                -4, -4, -4, -4,
+                -17, 32, 0, 0
+            );
+            Vector128<sbyte> shuffleVec = Vector128.Create(
+                 1, 0, 2, 1,
+                 4, 3, 5, 4,
+                 7, 6, 8, 7,
+                10, 9, 11, 10
+            );
             if (Ssse3.IsSupported)
             {
-                Vector128<sbyte> v = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), Vector128.Create(
-                     1, 0, 2, 1,
-                     4, 3, 5, 4,
-                     7, 6, 8, 7,
-                    10, 9, 11, 10
-                ));
-                v = Sse2.MultiplyHigh(
-                       (v & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
-                      ((v & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
+                Vector128<sbyte> vector = Ssse3.Shuffle(Vector128.LoadUnsafe(ref src).AsSByte(), shuffleVec);
+                vector = Sse2.MultiplyHigh(
+                       (vector & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16(), Vector128.Create(0x04000040).AsUInt16()).AsSByte() |
+                      ((vector & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
 
-                v += Ssse3.Shuffle(Vector128.Create(
-                           65, 71, -4, -4,
-                           -4, -4, -4, -4,
-                           -4, -4, -4, -4,
-                           -17, 32, 0, 0
-                        ),
-                        Sse2.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
-                        Vector128.GreaterThan(v, Vector128.Create((sbyte)25)));
+                vector += Ssse3.Shuffle(lut,
+                        Sse2.SubtractSaturate(vector.AsByte(), Vector128.Create((byte)51)).AsSByte() -
+                        Vector128.GreaterThan(vector, Vector128.Create((sbyte)25)));
 
-                xSse2.StoreUnsafe(v, ref encoded);
+                xSse2.StoreUnsafe(vector, ref encoded);
             }
             else
             {
-                Vector128<sbyte> v = AdvSimd.Arm64.VectorTableLookup(Vector128.LoadUnsafe(ref src).AsSByte().AsByte(), Vector128.Create(
-                     1, 0, 2, 1,
-                     4, 3, 5, 4,
-                     7, 6, 8, 7,
-                    10, 9, 11, 10
-                ).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
+                Vector128<sbyte> v = AdvSimd.Arm64.VectorTableLookup(Vector128.LoadUnsafe(ref src).AsSByte().AsByte(), 
+                    shuffleVec.AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
 
                 var temp = (v & Vector128.Create(0x0fc0fc00).AsSByte()).AsUInt16();
 
@@ -117,12 +103,7 @@ public static class VectorBase64Url
                         Vector128.ShiftRightLogical(AdvSimd.Arm64.UnzipOdd(temp.AsUInt16(), temp.AsUInt16()), 6)).AsSByte() |
                       ((v & Vector128.Create(0x003f03f0).AsSByte()).AsInt16() * Vector128.Create(0x01000010).AsInt16()).AsSByte();
 
-                v += AdvSimd.Arm64.VectorTableLookup(Vector128.Create(
-                           65, 71, -4, -4,
-                           -4, -4, -4, -4,
-                           -4, -4, -4, -4,
-                           -17, 32, 0, 0
-                        ).AsByte(),
+                v += AdvSimd.Arm64.VectorTableLookup(lut.AsByte(),
                         (AdvSimd.SubtractSaturate(v.AsByte(), Vector128.Create((byte)51)).AsSByte() -
                          Vector128.GreaterThan(v, Vector128.Create((sbyte)25))).AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
 

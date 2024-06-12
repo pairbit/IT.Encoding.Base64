@@ -7,9 +7,9 @@ namespace IT.Encoding.Base64;
 internal static class xArm64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<sbyte> Shuffle(Vector128<sbyte> vec, Vector128<sbyte> mask)
+    public static Vector128<sbyte> Shuffle(Vector128<byte> vec, Vector128<sbyte> mask)
     {
-        return AdvSimd.Arm64.VectorTableLookup(vec.AsByte(), mask.AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
+        return AdvSimd.Arm64.VectorTableLookup(vec, mask.AsByte() & Vector128.Create((byte)0x8f)).AsSByte();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
